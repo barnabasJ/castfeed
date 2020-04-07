@@ -15,7 +15,7 @@ export function reducer(state = initalState, action) {
     case SEARCH_SUCCESSFUL:
       return {
         ...state,
-        result: action.result,
+        results: action.results,
         error: null
       }
     case SEARCH_FAILED:
