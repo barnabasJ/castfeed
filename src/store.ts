@@ -1,12 +1,15 @@
 import { combineReducers, createStore, applyMiddleware, compose } from 'redux'
 import createSagaMiddleware from 'redux-saga'
+import { all } from 'redux-saga/effects'
 
 import * as Search from './search'
+import * as Player from './player'
 
 console.log('Search: ', Search)
 
 const reducer = combineReducers({
-  search: Search.reducer
+  search: Search.reducer,
+  player: Player.playerReducer
 })
 
 const composeEnhancers =
@@ -22,6 +25,8 @@ const enhancer = composeEnhancers(applyMiddleware(sagaMiddleware))
 
 const store = createStore(reducer, enhancer)
 
-sagaMiddleware.run(Search.searchSaga)
+sagaMiddleware.run(function * rootSaga () {
+  yield all([Search.searchSaga(), Player.rootSaga()])
+})
 
 export default store

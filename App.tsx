@@ -1,21 +1,35 @@
-import React from 'react';
-import {StyleSheet, Text, View, ScrollView} from 'react-native';
-import PlayerSmall from "./PlayerSmall";
+import React, { useEffect } from 'react';
+import { StyleSheet, Text, View, Button } from 'react-native';
+import { Provider } from 'react-redux'
+import Store from './src/store'
+import { initPlayerAction, playNewEpisodeAction, togglePlayAction } from './src/player';
 
-export default class App extends React.Component<any, any> {
-  render() {
-    return (
-       <View style={styles.containerMain}>
-         <Text> Main Content</Text>
-         <View style={styles.bottomView}>
-           <PlayerSmall/>
-         </View>
-       </View>
-    );
-  }
+export default function App() {
+  useEffect(() =>  {
+    Store.dispatch(initPlayerAction())
+  }, [])
+
+  return (
+    <Provider store={Store}>
+      <View style={styles.container}>
+        <Button 
+          title="pause"
+          onPress={() => Store.dispatch(
+            togglePlayAction()
+          )}
+        />
+        <Button 
+          title="play"
+          onPress={() => Store.dispatch(
+            playNewEpisodeAction({uri: "https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Comfort_Fit_-_03_-_Sorry.mp3"})
+          )}
+        />
+      </View>
+    </Provider>
+  );
 }
 const styles = StyleSheet.create({
-  containerMain: {
+  container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
