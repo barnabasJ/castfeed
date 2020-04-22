@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { Provider } from 'react-redux'
 import Store from './src/store'
-import { initPlayerAction, playNewEpisodeAction, togglePlayAction, skipBackwardAction, skipForwardAction } from './src/player';
+import { initPlayerAction, playNewEpisodeAction, togglePlayAction, skipBackwardAction, skipForwardAction, setRateAction } from './src/player';
 
 export default function App() {
   useEffect(() =>  {
@@ -34,6 +34,18 @@ export default function App() {
           title="forward"
           onPress={() => Store.dispatch(
             skipForwardAction(3 * 1000)
+          )}
+        />
+        <Button 
+          title="set rate 2"
+          onPress={() => Store.dispatch(
+            setRateAction(2)
+          )}
+        />
+        <Button 
+          title="set rate 1"
+          onPress={() => Store.dispatch(
+            setRateAction(1)
           )}
         />
       </View>

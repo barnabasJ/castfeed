@@ -10,7 +10,8 @@ import {
   PLAYER_RUN_UPDATE_PLAYER_STATUS,
   PLAYER_UPDATE_PLAYER_STATUS,
   PLAYER_SKIP_FORWARD,
-  PLAYER_SKIP_BACKWARD
+  PLAYER_SKIP_BACKWARD,
+  PLAYER_SET_RATE
 } from './types'
 import { Audio } from 'expo-av'
 import { PlaybackStatus } from 'expo-av/build/AV'
@@ -52,8 +53,13 @@ export interface SkipForwardAction extends Action<typeof PLAYER_SKIP_FORWARD> {
   millis: number
 }
 
-export interface SkipBackwardAction extends Action<typeof PLAYER_SKIP_BACKWARD> {
+export interface SkipBackwardAction
+  extends Action<typeof PLAYER_SKIP_BACKWARD> {
   millis: number
+}
+
+export interface SetRateAction extends Action<typeof PLAYER_SET_RATE> {
+  rate: number
 }
 
 export type PlayerAction =
@@ -139,16 +145,23 @@ export function updatePlayerStatusAction (status): UpdatePlayerStatusAction {
   }
 }
 
-export function skipForwardAction(millis): SkipForwardAction {
+export function skipForwardAction (millis): SkipForwardAction {
   return {
     type: PLAYER_SKIP_FORWARD,
     millis
   }
 }
 
-export function skipBackwardAction(millis): SkipBackwardAction {
+export function skipBackwardAction (millis): SkipBackwardAction {
   return {
     type: PLAYER_SKIP_BACKWARD,
     millis
+  }
+}
+
+export function setRateAction (rate): SetRateAction {
+  return {
+    type: PLAYER_SET_RATE,
+    rate
   }
 }

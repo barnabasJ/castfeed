@@ -1,5 +1,12 @@
 import { Audio } from 'expo-av'
-import { call, put, select, takeLatest, takeEvery, delay } from 'redux-saga/effects'
+import {
+  call,
+  put,
+  select,
+  takeLatest,
+  takeEvery,
+  delay
+} from 'redux-saga/effects'
 import get from 'lodash/get'
 import {
   initPlayerSuccessfulAction,
@@ -10,7 +17,8 @@ import {
   RunUpdatePlayerStatusAction,
   updatePlayerStatusAction,
   runUpdatePlayerStatusAction,
-  SkipForwardAction
+  SkipForwardAction,
+  SetRateAction
 } from './actions'
 import {
   PLAYER_INIT,
@@ -18,7 +26,8 @@ import {
   PLAYER_RUN_UPDATE_PLAYER_STATUS,
   PLAYER_TOGGLE_PLAY,
   PLAYER_SKIP_FORWARD,
-  PLAYER_SKIP_BACKWARD
+  PLAYER_SKIP_BACKWARD,
+  PLAYER_SET_RATE
 } from './types'
 import { PlaybackStatus } from 'expo-av/build/AV'
 
@@ -116,6 +125,18 @@ function * handleSkip (millis: number) {
   }
 }
 
+function * handleSetRate ({ rate }: SetRateAction) {
+  const sound = yield select(state => get(state, 'player.sound'))
+  if (sound) {
+    yield call(
+      sound.setRateAsync.bind(sound),
+      rate,
+      true,
+      Audio.PitchCorrectionQuality.High
+    )
+  }
+}
+
 export function * rootSaga () {
   yield takeLatest(PLAYER_INIT, handlePlayerInit)
   yield takeLatest(PLAYER_PLAY_NEW_EPISODE, handlePlayerPlayNewEpisode)
@@ -123,4 +144,5 @@ export function * rootSaga () {
   yield takeLatest(PLAYER_TOGGLE_PLAY, handleTogglePlay)
   yield takeEvery(PLAYER_SKIP_FORWARD, handleSkipForward)
   yield takeEvery(PLAYER_SKIP_BACKWARD, handleSkipBackward)
+  yield takeLatest(PLAYER_SET_RATE, handleSetRate)
 }
