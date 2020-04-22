@@ -19,13 +19,13 @@ export default function App() {
           )}
         />
         <Button 
-          title="pause"
+          title="play/pause"
           onPress={() => Store.dispatch(
             togglePlayAction()
           )}
         />
         <Button 
-          title="play"
+          title="play song"
           onPress={() => Store.dispatch(
             playNewEpisodeAction({uri: "https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Comfort_Fit_-_03_-_Sorry.mp3"})
           )}
