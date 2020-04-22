@@ -8,7 +8,9 @@ import {
   PLAYER_PLAY_NEW_EPISODE_FAILED,
   PLAYER_TOGGLE_PLAY,
   PLAYER_RUN_UPDATE_PLAYER_STATUS,
-  PLAYER_UPDATE_PLAYER_STATUS
+  PLAYER_UPDATE_PLAYER_STATUS,
+  PLAYER_SKIP_FORWARD,
+  PLAYER_SKIP_BACKWARD
 } from './types'
 import { Audio } from 'expo-av'
 import { PlaybackStatus } from 'expo-av/build/AV'
@@ -44,6 +46,14 @@ export interface RunUpdatePlayerStatusAction
 export interface UpdatePlayerStatusAction
   extends Action<typeof PLAYER_UPDATE_PLAYER_STATUS> {
   status: PlaybackStatus
+}
+
+export interface SkipForwardAction extends Action<typeof PLAYER_SKIP_FORWARD> {
+  millis: number
+}
+
+export interface SkipBackwardAction extends Action<typeof PLAYER_SKIP_BACKWARD> {
+  millis: number
 }
 
 export type PlayerAction =
@@ -126,5 +136,19 @@ export function updatePlayerStatusAction (status): UpdatePlayerStatusAction {
   return {
     type: PLAYER_UPDATE_PLAYER_STATUS,
     status
+  }
+}
+
+export function skipForwardAction(millis): SkipForwardAction {
+  return {
+    type: PLAYER_SKIP_FORWARD,
+    millis
+  }
+}
+
+export function skipBackwardAction(millis): SkipBackwardAction {
+  return {
+    type: PLAYER_SKIP_BACKWARD,
+    millis
   }
 }

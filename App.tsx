@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { Provider } from 'react-redux'
 import Store from './src/store'
-import { initPlayerAction, playNewEpisodeAction, togglePlayAction } from './src/player';
+import { initPlayerAction, playNewEpisodeAction, togglePlayAction, skipBackwardAction, skipForwardAction } from './src/player';
 
 export default function App() {
   useEffect(() =>  {
@@ -13,6 +13,12 @@ export default function App() {
     <Provider store={Store}>
       <View style={styles.container}>
         <Button 
+          title="back"
+          onPress={() => Store.dispatch(
+            skipBackwardAction(3 * 1000)
+          )}
+        />
+        <Button 
           title="pause"
           onPress={() => Store.dispatch(
             togglePlayAction()
@@ -22,6 +28,12 @@ export default function App() {
           title="play"
           onPress={() => Store.dispatch(
             playNewEpisodeAction({uri: "https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Comfort_Fit_-_03_-_Sorry.mp3"})
+          )}
+        />
+        <Button 
+          title="forward"
+          onPress={() => Store.dispatch(
+            skipForwardAction(3 * 1000)
           )}
         />
       </View>

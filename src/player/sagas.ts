@@ -1,5 +1,5 @@
 import { Audio } from 'expo-av'
-import { call, put, select, takeLatest, delay } from 'redux-saga/effects'
+import { call, put, select, takeLatest, takeEvery, delay } from 'redux-saga/effects'
 import get from 'lodash/get'
 import {
   initPlayerSuccessfulAction,
@@ -9,13 +9,30 @@ import {
   PlayNewEpisodeAction,
   RunUpdatePlayerStatusAction,
   updatePlayerStatusAction,
-  runUpdatePlayerStatusAction
+  runUpdatePlayerStatusAction,
+  SkipForwardAction
 } from './actions'
-import { PLAYER_INIT, PLAYER_PLAY_NEW_EPISODE, PLAYER_RUN_UPDATE_PLAYER_STATUS, PLAYER_TOGGLE_PLAY } from './types'
+import {
+  PLAYER_INIT,
+  PLAYER_PLAY_NEW_EPISODE,
+  PLAYER_RUN_UPDATE_PLAYER_STATUS,
+  PLAYER_TOGGLE_PLAY,
+  PLAYER_SKIP_FORWARD,
+  PLAYER_SKIP_BACKWARD
+} from './types'
 import { PlaybackStatus } from 'expo-av/build/AV'
 
 const initialStatus = {
   shouldPlay: true
+}
+
+function getSoundAndStatus (
+  state
+): { sound: Audio.Sound; status: PlaybackStatus } {
+  return {
+    sound: get(state, 'player.sound'),
+    status: get(state, 'player.status')
+  }
 }
 
 function * handlePlayerInit () {
@@ -40,14 +57,14 @@ function * handleRunUpdatePlayerStatus ({
   sound,
   interval
 }: RunUpdatePlayerStatusAction) {
-  console.log("setting progress update intervall: ", interval)
+  console.log('setting progress update intervall: ', interval)
   yield call(sound.setProgressUpdateIntervalAsync.bind(sound), interval)
   while (true) {
-    console.log("Waiting for new status")
+    console.log('Waiting for new status')
     const newStatus = yield call(sound.getStatusAsync.bind(sound))
-    console.log("Setting new status")
+    console.log('Setting new status')
     yield put(updatePlayerStatusAction(newStatus))
-    console.log("Waiing: ", interval)
+    console.log('Waiing: ', interval)
     yield delay(interval)
   }
 }
@@ -73,18 +90,29 @@ function * handlePlayerPlayNewEpisode ({ episode }: PlayNewEpisodeAction) {
 }
 
 function * handleTogglePlay () {
-  const {
-    sound,
-    status
-  }: { sound: Audio.Sound; status: PlaybackStatus } = yield select(state => ({
-    sound: get(state, 'player.sound'),
-    status: get(state, 'player.status')
-  }))
-  console.log("Toggle Play/Pause")
+  const { sound, status } = yield select(getSoundAndStatus)
+  console.log('Toggle Play/Pause')
   if (sound) {
     yield status.isPlaying
       ? call(sound.pauseAsync.bind(sound))
       : call(sound.playAsync.bind(sound))
+  }
+}
+function * handleSkipForward ({ millis }: SkipForwardAction) {
+  yield handleSkip(millis)
+}
+
+function * handleSkipBackward ({ millis }: SkipForwardAction) {
+  yield handleSkip(-millis)
+}
+
+function * handleSkip (millis: number) {
+  const { sound, status } = yield select(getSoundAndStatus)
+  if (sound && status) {
+    yield call(
+      sound.setPositionAsync.bind(sound),
+      status.positionMillis + millis
+    )
   }
 }
 
@@ -93,4 +121,6 @@ export function * rootSaga () {
   yield takeLatest(PLAYER_PLAY_NEW_EPISODE, handlePlayerPlayNewEpisode)
   yield takeLatest(PLAYER_RUN_UPDATE_PLAYER_STATUS, handleRunUpdatePlayerStatus)
   yield takeLatest(PLAYER_TOGGLE_PLAY, handleTogglePlay)
+  yield takeEvery(PLAYER_SKIP_FORWARD, handleSkipForward)
+  yield takeEvery(PLAYER_SKIP_BACKWARD, handleSkipBackward)
 }
