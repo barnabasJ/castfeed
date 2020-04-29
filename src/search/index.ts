@@ -1,44 +1,10 @@
 import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit'
 import { withPayloadType } from 'src/utils'
-
-interface SearchResult {
-  artistName: string
-  artworkUrl100: string
-  artworkUrl30: string
-  artworkUrl600: string
-  artworkUrl60: string
-  collectionCensoredName: string
-  collectionExplicitness: string
-  collectionHdPrice: number
-  collectionId: string
-  collectionName: string
-  collectionPrice: number
-  collectionViewUrl: string
-  contentAdvisoryRating: string
-  country: string
-  currency: string
-  feedUrl: string
-  genreIds: Array<number>
-  genres: Array<string>
-  kind: string
-  primaryGenreName: string
-  releaseDate: string
-  trackCensoredName: string
-  trackCount: number
-  trackExplicitness: string
-  trackHdPrice: number
-  trackHdRentalPrice: number
-  trackId: string
-  trackName: string
-  trackPrice: number
-  trackRentalPrice: number
-  trackViewUrl: string
-  wrapperType: string
-}
+import { Podcast } from 'src/podcasts'
 
 interface SearchState {
   term: string
-  results: Array<SearchResult>
+  results: Array<Podcast>
   error?: Error
 }
 
@@ -52,10 +18,10 @@ const search = createSlice({
   initialState,
   reducers: {
     searchPodcastFulfilled: {
-      reducer: (state, action: PayloadAction<Array<SearchResult>>) => {
+      reducer: (state, action: PayloadAction<Array<Podcast>>) => {
         state.results = action.payload
       },
-      prepare: withPayloadType<Array<SearchResult>>()
+      prepare: withPayloadType<Array<Podcast>>()
     },
     searchPodcastRejected: {
       reducer: (state, action: PayloadAction<Error>) => {

@@ -4,14 +4,17 @@ import { Provider } from 'react-redux'
 import Store from './src/store'
 import { initPlayer, playNewEpisode, togglePlay, skipBackward, skipForward, setRate } from './src/player';
 import { searchPodcast } from './src/search';
+import { Search } from 'src/components/search';
 
 export default function App() {
   useEffect(() =>  {
     Store.dispatch(initPlayer())
+    window.store = Store
   }, [])
   return (
     <Provider store={Store}>
       <View style={styles.container}>
+        <Search/>
         <Button title="search" onPress={() => Store.dispatch(searchPodcast('elixir'))}/>
         <Button 
           title="back"

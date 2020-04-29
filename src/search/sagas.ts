@@ -1,9 +1,10 @@
-import { call, put, takeLatest } from 'redux-saga/effects'
+import { call, put, takeLatest, delay } from 'redux-saga/effects'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { searchPodcastFulfilled, searchPodcastRejected, searchPodcast } from '.'
 
 export function * searchPodcastSaga ({ payload: term }: PayloadAction<string>) {
   try {
+    yield delay(100) // debounce
     const resp = yield call(
       fetch,
       `https://itunes.apple.com/search?media=podcast&term=${term}`
