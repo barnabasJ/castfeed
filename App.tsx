@@ -2,11 +2,11 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { Provider } from 'react-redux'
 import Store from './src/store'
-import { initPlayerAction, playNewEpisodeAction, togglePlayAction, skipBackwardAction, skipForwardAction, setRateAction } from './src/player';
+import { initPlayer, playNewEpisode, togglePlay, skipBackward, skipForward, setRate } from './src/player';
 
 export default function App() {
   useEffect(() =>  {
-    Store.dispatch(initPlayerAction())
+    Store.dispatch(initPlayer())
   }, [])
 
   return (
@@ -15,37 +15,37 @@ export default function App() {
         <Button 
           title="back"
           onPress={() => Store.dispatch(
-            skipBackwardAction(3 * 1000)
+            skipBackward(3 * 1000)
           )}
         />
         <Button 
           title="play/pause"
           onPress={() => Store.dispatch(
-            togglePlayAction()
+            togglePlay()
           )}
         />
         <Button 
           title="play song"
           onPress={() => Store.dispatch(
-            playNewEpisodeAction({uri: "https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Comfort_Fit_-_03_-_Sorry.mp3"})
+            playNewEpisode({uri: "https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Comfort_Fit_-_03_-_Sorry.mp3"})
           )}
         />
         <Button 
           title="forward"
           onPress={() => Store.dispatch(
-            skipForwardAction(3 * 1000)
+            skipForward(3 * 1000)
           )}
         />
         <Button 
           title="set rate 2"
           onPress={() => Store.dispatch(
-            setRateAction(2)
+            setRate(2)
           )}
         />
         <Button 
           title="set rate 1"
           onPress={() => Store.dispatch(
-            setRateAction(1)
+            setRate(1)
           )}
         />
       </View>

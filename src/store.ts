@@ -1,32 +1,27 @@
 import { combineReducers, createStore, applyMiddleware, compose } from 'redux'
 import createSagaMiddleware from 'redux-saga'
 import { all } from 'redux-saga/effects'
+import { getDefaultMiddleware, configureStore } from '@reduxjs/toolkit'
 
 import * as Search from './search'
-import * as Player from './player'
+import player from './player'
+import { rootSaga as playerSaga } from './player/sagas'
 
-console.log('Search: ', Search)
-
-const reducer = combineReducers({
+const reducer = {
   search: Search.reducer,
-  player: Player.playerReducer
-})
-
-const composeEnhancers =
-  typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-        // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
-      })
-    : compose
+  player
+}
 
 const sagaMiddleware = createSagaMiddleware()
+const middleware = [...getDefaultMiddleware(), sagaMiddleware]
 
-const enhancer = composeEnhancers(applyMiddleware(sagaMiddleware))
-
-const store = createStore(reducer, enhancer)
+const store = configureStore({
+  reducer,
+  middleware,
+})
 
 sagaMiddleware.run(function * rootSaga () {
-  yield all([Search.searchSaga(), Player.rootSaga()])
+  yield all([Search.searchSaga(), playerSaga()])
 })
 
 export default store

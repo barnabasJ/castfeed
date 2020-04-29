@@ -8,40 +8,43 @@ import {
   delay
 } from 'redux-saga/effects'
 import get from 'lodash/get'
-import {
-  initPlayerSuccessfulAction,
-  initPlayerFailedAction,
-  playNewEpisodeSuccessfulAction,
-  playNewEpisodeFailedAction,
-  PlayNewEpisodeAction,
-  RunUpdatePlayerStatusAction,
-  updatePlayerStatusAction,
-  runUpdatePlayerStatusAction,
-  SkipForwardAction,
-  SetRateAction
-} from './actions'
-import {
-  PLAYER_INIT,
-  PLAYER_PLAY_NEW_EPISODE,
-  PLAYER_RUN_UPDATE_PLAYER_STATUS,
-  PLAYER_TOGGLE_PLAY,
-  PLAYER_SKIP_FORWARD,
-  PLAYER_SKIP_BACKWARD,
-  PLAYER_SET_RATE
-} from './types'
 import { PlaybackStatus } from 'expo-av/build/AV'
+import {
+  initPlayer,
+  playNewEpisode,
+  runUpdatePlayerStatus,
+  togglePlay,
+  skipForward,
+  skipBackward,
+  setRate,
+  initFulfilled,
+  initRejected,
+  updatePlayerStatus,
+  playNewEpisodeFulfilled,
+  playNewEpisodeRejected,
+  Episode
+} from '.'
+import { PayloadAction } from '@reduxjs/toolkit'
+
+const soundContainer = (() => {
+  let sound: Audio.Sound = null
+  const getSound = () => sound
+  const setSound = newSound => {
+    console.log('setting new sound: ', sound)
+    sound = newSound
+  }
+  return {
+    getSound,
+    setSound
+  }
+})()
 
 const initialStatus = {
   shouldPlay: true
 }
 
-function getSoundAndStatus (
-  state
-): { sound: Audio.Sound; status: PlaybackStatus } {
-  return {
-    sound: get(state, 'player.sound'),
-    status: get(state, 'player.status')
-  }
+function getStatus (state): PlaybackStatus {
+  return get(state, 'player.status')
 }
 
 function * handlePlayerInit () {
@@ -55,68 +58,67 @@ function * handlePlayerInit () {
       interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
       playThroughEarpieceAndroid: false
     })
-    yield put(initPlayerSuccessfulAction())
+    yield put(initFulfilled())
   } catch (e) {
     console.log(e)
-    put(initPlayerFailedAction(e))
+    put(initRejected(e))
   }
 }
 
 function * handleRunUpdatePlayerStatus ({
-  sound,
-  interval
-}: RunUpdatePlayerStatusAction) {
-  console.log('setting progress update intervall: ', interval)
+  payload: interval
+}: PayloadAction<number>) {
+  const sound = soundContainer.getSound()
   yield call(sound.setProgressUpdateIntervalAsync.bind(sound), interval)
   while (true) {
-    console.log('Waiting for new status')
     const newStatus = yield call(sound.getStatusAsync.bind(sound))
-    console.log('Setting new status')
-    yield put(updatePlayerStatusAction(newStatus))
-    console.log('Waiing: ', interval)
+    yield put(updatePlayerStatus(newStatus))
     yield delay(interval)
   }
 }
 
-function * handlePlayerPlayNewEpisode ({ episode }: PlayNewEpisodeAction) {
+function * handlePlayerPlayNewEpisode (action: PayloadAction<Episode>) {
   try {
-    const oldSound = yield select(state => get(state, 'player.sound'))
-    if (oldSound) {
-      yield call(oldSound.stopAsync.bind(oldSound))
+    const episode = action.payload
+    const sound = soundContainer.getSound()
+    if (sound) {
+      yield call(sound.stopAsync.bind(sound))
     }
     const source = { uri: episode.uri }
-    const { sound, status } = yield call(
+    const { sound: newSound, status } = yield call(
       Audio.Sound.createAsync,
       source,
       initialStatus
     )
-    yield put(runUpdatePlayerStatusAction(sound, 500))
-    yield put(playNewEpisodeSuccessfulAction(sound, status))
+    soundContainer.setSound(newSound)
+    yield put(runUpdatePlayerStatus(500))
+    yield put(playNewEpisodeFulfilled(episode, status))
   } catch (e) {
     console.log(e)
-    yield put(playNewEpisodeFailedAction(e))
+    yield put(playNewEpisodeRejected(e))
   }
 }
 
 function * handleTogglePlay () {
-  const { sound, status } = yield select(getSoundAndStatus)
-  console.log('Toggle Play/Pause')
+  const status = yield select(getStatus)
+  const sound = soundContainer.getSound()
   if (sound) {
     yield status.isPlaying
       ? call(sound.pauseAsync.bind(sound))
       : call(sound.playAsync.bind(sound))
   }
 }
-function * handleSkipForward ({ millis }: SkipForwardAction) {
+function * handleSkipForward ({ payload: millis }: PayloadAction<number>) {
   yield handleSkip(millis)
 }
 
-function * handleSkipBackward ({ millis }: SkipForwardAction) {
+function * handleSkipBackward ({ payload: millis }: PayloadAction<number>) {
   yield handleSkip(-millis)
 }
 
 function * handleSkip (millis: number) {
-  const { sound, status } = yield select(getSoundAndStatus)
+  const status = yield select(getStatus)
+  const sound = soundContainer.getSound()
   if (sound && status) {
     yield call(
       sound.setPositionAsync.bind(sound),
@@ -125,9 +127,9 @@ function * handleSkip (millis: number) {
   }
 }
 
-function * handleSetRate ({ rate }: SetRateAction) {
-  const sound = yield select(state => get(state, 'player.sound'))
-  if (sound && sound.isLoaded) {
+function * handleSetRate ({ payload: rate }: PayloadAction<number>) {
+  const sound = soundContainer.getSound()
+  if (sound && sound._loaded) {
     yield call(
       sound.setRateAsync.bind(sound),
       rate,
@@ -138,11 +140,14 @@ function * handleSetRate ({ rate }: SetRateAction) {
 }
 
 export function * rootSaga () {
-  yield takeLatest(PLAYER_INIT, handlePlayerInit)
-  yield takeLatest(PLAYER_PLAY_NEW_EPISODE, handlePlayerPlayNewEpisode)
-  yield takeLatest(PLAYER_RUN_UPDATE_PLAYER_STATUS, handleRunUpdatePlayerStatus)
-  yield takeLatest(PLAYER_TOGGLE_PLAY, handleTogglePlay)
-  yield takeEvery(PLAYER_SKIP_FORWARD, handleSkipForward)
-  yield takeEvery(PLAYER_SKIP_BACKWARD, handleSkipBackward)
-  yield takeLatest(PLAYER_SET_RATE, handleSetRate)
+  yield takeLatest(initPlayer.toString(), handlePlayerInit)
+  yield takeLatest(playNewEpisode.toString(), handlePlayerPlayNewEpisode)
+  yield takeLatest(
+    runUpdatePlayerStatus.toString(),
+    handleRunUpdatePlayerStatus
+  )
+  yield takeLatest(togglePlay.toString(), handleTogglePlay)
+  yield takeEvery(skipForward.toString(), handleSkipForward)
+  yield takeEvery(skipBackward.toString(), handleSkipBackward)
+  yield takeLatest(setRate.toString(), handleSetRate)
 }
