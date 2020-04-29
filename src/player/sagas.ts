@@ -127,7 +127,7 @@ function * handleSkip (millis: number) {
 
 function * handleSetRate ({ rate }: SetRateAction) {
   const sound = yield select(state => get(state, 'player.sound'))
-  if (sound) {
+  if (sound && sound.isLoaded) {
     yield call(
       sound.setRateAsync.bind(sound),
       rate,
