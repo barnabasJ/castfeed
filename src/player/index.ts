@@ -1,9 +1,6 @@
 import { PlaybackStatus } from 'expo-av/build/AV'
 import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit'
-
-function withPayloadType<T> () {
-  return (t: T) => ({ payload: t })
-}
+import { withPayloadType } from 'src/utils'
 
 export interface Episode {
   uri: string

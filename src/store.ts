@@ -3,12 +3,13 @@ import createSagaMiddleware from 'redux-saga'
 import { all } from 'redux-saga/effects'
 import { getDefaultMiddleware, configureStore } from '@reduxjs/toolkit'
 
-import * as Search from './search'
+import search from './search'
 import player from './player'
 import { rootSaga as playerSaga } from './player/sagas'
+import { searchSaga } from './search/sagas'
 
 const reducer = {
-  search: Search.reducer,
+  search,
   player
 }
 
@@ -17,11 +18,11 @@ const middleware = [...getDefaultMiddleware(), sagaMiddleware]
 
 const store = configureStore({
   reducer,
-  middleware,
+  middleware
 })
 
 sagaMiddleware.run(function * rootSaga () {
-  yield all([Search.searchSaga(), playerSaga()])
+  yield all([searchSaga(), playerSaga()])
 })
 
 export default store

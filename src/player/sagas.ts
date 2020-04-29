@@ -29,10 +29,7 @@ import { PayloadAction } from '@reduxjs/toolkit'
 const soundContainer = (() => {
   let sound: Audio.Sound = null
   const getSound = () => sound
-  const setSound = newSound => {
-    console.log('setting new sound: ', sound)
-    sound = newSound
-  }
+  const setSound = newSound => (sound = newSound)
   return {
     getSound,
     setSound
