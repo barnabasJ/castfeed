@@ -9,7 +9,6 @@ import { Search } from 'src/components/search';
 export default function App() {
   useEffect(() =>  {
     Store.dispatch(initPlayer())
-    window.store = Store
   }, [])
   return (
     <Provider store={Store}>
