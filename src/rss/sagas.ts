@@ -1,7 +1,7 @@
 import { call, takeEvery, put } from 'redux-saga/effects'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { Podcast } from 'src/podcasts'
-import { parseStringPromise } from 'react-native-xml2js'
+import { parseString } from 'react-native-xml2js'
 import get from 'lodash/get'
 import curry from 'lodash/curry'
 import map from 'lodash/fp/map'
@@ -44,7 +44,7 @@ const itemToEpisode = curry(
 const itemsToEpisodes = (items, podcast) => map(itemToEpisode(podcast), items)
 
 const parseFeed = async xml =>
-  get(await parseStringPromise(xml), 'rss.channel[0].item')
+  get(await parseString(xml), 'rss.channel[0].item')
 
 export function * handleGetEpisodesForPodcast ({
   payload: podcast

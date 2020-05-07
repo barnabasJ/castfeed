@@ -1,11 +1,11 @@
-import { select, takeLatest } from "redux-saga/effects";
-import { persistor, store } from './local-storage';
+import { select, takeLatest } from 'redux-saga/effects'
+import { AsyncStorage } from 'react-native'
 
-const storageContiner = (() => {
-  let storage = window.localStorage;
+const storageContainer = (() => {
+  let storage = AsyncStorage
 
   const getStorage = () => storage
-  const setStorage = newStorage => storage = newStorage
+  const setStorage = newStorage => { storage = newStorage }
 
   return {
     getStorage,
@@ -15,12 +15,12 @@ const storageContiner = (() => {
 
 const storageKey = 'castfeed'
 
-export const loadState = () => JSON.parse(storageContiner.getStorage().getItem(storageKey) || '{}')
+export const loadState = async () => JSON.parse(await storageContainer.getStorage().getItem(storageKey) || '{}')
 
 let lastState = null
-export function * handleSave() {
-  const storage = storageContiner.getStorage()
-  const state = yield select(({podcasts, episodes}) => ({
+export function * handleSave () {
+  const storage = storageContainer.getStorage()
+  const state = yield select(({ podcasts, episodes }) => ({
     podcasts,
     episodes
   }))
@@ -32,6 +32,6 @@ export function * handleSave() {
   }
 }
 
-export function * storageSaga() {
+export function * storageSaga () {
   yield takeLatest('*', handleSave)
 }
