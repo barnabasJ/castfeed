@@ -5,7 +5,7 @@ import Store from './src/store'
 import { initPlayer, playNewEpisode, togglePlay, skipBackward, skipForward, setRate } from './src/player';
 import { searchPodcast } from './src/search';
 import { Search } from 'src/components/search';
-
+import Player from "./src/components/player/Player";
 export default function App() {
   useEffect(() =>  {
     Store.dispatch(initPlayer())
@@ -13,44 +13,45 @@ export default function App() {
   return (
     <Provider store={Store}>
       <View style={styles.container}>
-        <Search/>
-        <Button title="search" onPress={() => Store.dispatch(searchPodcast('elixir'))}/>
-        <Button 
-          title="back"
-          onPress={() => Store.dispatch(
-            skipBackward(3 * 1000)
-          )}
+        <Player/>
+{/*        <Button title="search" onPress={() => Store.dispatch(searchPodcast('elixir'))}/>
+        <Button
+           title="back"
+           onPress={() => Store.dispatch(
+              skipBackward(3 * 1000)
+           )}
         />
-        <Button 
-          title="play/pause"
-          onPress={() => Store.dispatch(
-            togglePlay()
-          )}
+        <Button
+           title="play/pause"
+           onPress={() => Store.dispatch(
+              togglePlay()
+           )}
         />
-        <Button 
-          title="play song"
-          onPress={() => Store.dispatch(
-            playNewEpisode({uri: "https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Comfort_Fit_-_03_-_Sorry.mp3"})
-          )}
+        <Button
+           title="play song"
+           onPress={() => Store.dispatch(
+              playNewEpisode({uri: "https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Comfort_Fit_-_03_-_Sorry.mp3"})
+           )}
         />
-        <Button 
-          title="forward"
-          onPress={() => Store.dispatch(
-            skipForward(3 * 1000)
-          )}
+        <Button
+           title="forward"
+           onPress={() => Store.dispatch(
+              skipForward(3 * 1000)
+           )}
         />
-        <Button 
-          title="set rate 2"
-          onPress={() => Store.dispatch(
-            setRate(2)
-          )}
+        <Button
+           title="set rate 2"
+           onPress={() => Store.dispatch(
+              setRate(2)
+           )}
         />
-        <Button 
-          title="set rate 1"
-          onPress={() => Store.dispatch(
-            setRate(1)
-          )}
-        />
+        <Button
+           title="set rate 1"
+           onPress={() => Store.dispatch(
+              setRate(1)
+           )}
+        />*/}
+
       </View>
     </Provider>
   );
@@ -60,15 +61,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  bottomView: {
-    width: '100%',
-    height: 150,
-    backgroundColor: '#EE5407',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: 0,
   },
   textStyle: {
     color: '#fff',
