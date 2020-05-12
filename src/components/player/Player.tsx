@@ -17,6 +17,7 @@ import {initPlayer, playNewEpisode, setRate, skipBackward, togglePlay} from "../
 import colors from '../../styles/colors'
 import {useSelector} from 'react-redux'
 
+
 export default function Player() {
    const {positionMillis} = useSelector((state: RootState) => state.player.status) || {}
    const {durationMillis} = useSelector((state: RootState) => state.player.status) || {}
@@ -33,7 +34,6 @@ export default function Player() {
    const [episode, setEpisode] = useState(() => Store.dispatch(
       playNewEpisode({uri: currentEpisode})
    ));
-   const [waitState, setWaitState] = useState("");
 
    const onPositionSliderChange = position => {
       Store.dispatch(skipBackward(positionMillis - position))
@@ -55,9 +55,7 @@ export default function Player() {
       )
    }
 
-
    useEffect(() => {
-      isBuffering ? setWaitState("Buffering...") : setWaitState("")
       if (!isLoaded) ToastAndroid.show("Loading...", ToastAndroid.SHORT);
       Store.dispatch(initPlayer())
    }, [])
@@ -82,7 +80,7 @@ export default function Player() {
                     step={1000}
                     onValueChange={onPositionSliderChange}/>
             <View style={styles.textRow}>
-               <Text>{millisToTime(positionMillis) + "/" + millisToTime(durationMillis)}</Text>
+               <Text>{isBuffering ? "Buffering..." : millisToTime(positionMillis) + "/" + millisToTime(durationMillis)}</Text>
             </View>
             <View style={styles.controls}>
                <TouchableOpacity style={styles.horizontalSpace}>
@@ -130,7 +128,7 @@ export default function Player() {
                     onValueChange={position => Store.dispatch(
                        setRate(position)
                     )}/>
-            <Text style={{margin:10}}>Playback speed: {rate}</Text>
+            <Text style={{margin: 10}}>Playback speed: {rate}</Text>
          </SafeAreaView>
       </Provider>
    );
