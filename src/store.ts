@@ -32,6 +32,7 @@ const store = configureStore({
   middleware
 })
 
+// Todo: fix localstorage for android
 sagaMiddleware.run(function * rootSaga () {
   yield all([searchSaga(), playerSaga(), rssSaga(), episodesSaga()])
 })
