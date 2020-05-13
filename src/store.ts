@@ -1,6 +1,7 @@
 import createSagaMiddleware from 'redux-saga'
 import { all } from 'redux-saga/effects'
-import { getDefaultMiddleware, configureStore } from '@reduxjs/toolkit'
+import { getDefaultMiddleware, configureStore, combineReducers, DeepPartial } from '@reduxjs/toolkit'
+import { useSelector as reactReduxUseSelector, TypedUseSelectorHook } from 'react-redux'
 
 import search from './search'
 import player from './player'
@@ -11,32 +12,33 @@ import { rootSaga as playerSaga } from './player/sagas'
 import { episodesSaga } from './episodes/sagas'
 import { searchSaga } from './search/sagas'
 import { rssSaga } from './rss/sagas'
-import { loadState, storageSaga } from './storage'
+import { storageSaga } from './storage'
 
-const reducer = {
+const reducer = combineReducers({
   podcasts,
   episodes,
   search,
   rss,
   player
+})
+
+const createStore = (preloadedState: DeepPartial<RootState>) => {
+  const sagaMiddleware = createSagaMiddleware()
+  const middleware = [...getDefaultMiddleware(), sagaMiddleware]
+
+  const store = configureStore({
+    reducer,
+    preloadedState,
+    middleware
+  })
+
+  sagaMiddleware.run(function * rootSaga () {
+    yield all([searchSaga(), playerSaga(), rssSaga(), episodesSaga(), storageSaga()])
+  })
+  return store
 }
+export type RootState = ReturnType<typeof reducer>
 
-// const preloadedState = loadState()
+export const useSelector: TypedUseSelectorHook<RootState> = reactReduxUseSelector
 
-const sagaMiddleware = createSagaMiddleware()
-const middleware = [...getDefaultMiddleware(), sagaMiddleware]
-
-const store = configureStore({
-  reducer,
-  //preloadedState,
-  middleware
-})
-
-// Todo: fix localstorage for android
-sagaMiddleware.run(function * rootSaga () {
-  yield all([searchSaga(), playerSaga(), rssSaga(), episodesSaga()])
-})
-
-export type RootState = ReturnType<typeof store.getState>
-
-export default store
+export default createStore

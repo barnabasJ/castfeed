@@ -1,9 +1,11 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createEntityAdapter } from '@reduxjs/toolkit'
 import { getEpisodesForPodcastFulfilled } from 'src/rss'
 import { unsubscribeFromPodcast } from 'src/podcasts'
+import { RootState } from 'src/store'
 
 export interface Episode {
-  podcastId: string
+  id: string
+  podcastId: number
   title: string
   pubDate: string
   link: string
@@ -20,19 +22,21 @@ export interface Episode {
   }
 }
 
-interface EpisodesState {
-  [key: string]: Array<Episode>
-}
+const episodeAdapter = createEntityAdapter({
+  selectId: ({ id }: Episode) => id,
+  sortComparer: (e1: Episode, e2: Episode) => e1.id.localeCompare(e2.id)
+})
 
-const initialState: EpisodesState = {}
+type IEpisodesState = ReturnType<typeof episodeAdapter.getInitialState>
+
 const episodes = createSlice({
   name: 'episodes',
-  initialState,
+  initialState: episodeAdapter.getInitialState(),
   reducers: {},
   extraReducers: builder => {
     builder.addCase(getEpisodesForPodcastFulfilled, (state, action) => {
-      const { podcast, episodes } = action.payload
-      state[podcast.trackId] = episodes
+      const { episodes } = action.payload
+      episodeAdapter.upsertMany(state, episodes)
     })
 
     builder.addCase(unsubscribeFromPodcast, (state, action) => {
@@ -43,4 +47,6 @@ const episodes = createSlice({
 
 export default episodes.reducer
 
-export const {} = episodes.actions
+export const {
+  selectAll
+} = episodeAdapter.getSelectors((state: RootState) => state.episodes)

@@ -22,7 +22,7 @@ import {
   updatePlayerStatus,
   playNewEpisodeFulfilled,
   playNewEpisodeRejected,
-  Episode
+  PlayableFile
 } from '.'
 import { PayloadAction } from '@reduxjs/toolkit'
 
@@ -74,7 +74,7 @@ function * handleRunUpdatePlayerStatus ({
   }
 }
 
-function * handlePlayerPlayNewEpisode (action: PayloadAction<Episode>) {
+function * handlePlayerPlayNewEpisode (action: PayloadAction<PlayableFile>) {
   try {
     const episode = action.payload
     const sound = soundContainer.getSound()

@@ -1,5 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit'
-import { createAction, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, createAction, PayloadAction } from '@reduxjs/toolkit'
+import { serializeError } from 'serialize-error'
 import { withPayloadType } from 'src/utils'
 import { Podcast } from 'src/podcasts'
 import { Episode } from 'src/episodes'
@@ -31,8 +31,13 @@ const rss = createSlice({
         }
       })
     },
-    getEpisodesForPodcastRejected: (state, action: PayloadAction<Error>) => {
-      state.error = action.payload
+    getEpisodesForPodcastRejected: {
+      reducer: (state, action: PayloadAction<Error>) => {
+        state.error = action.payload
+      },
+      prepare: (error) => ({
+        payload: serializeError(error)
+      })
     }
   }
 })
@@ -47,4 +52,8 @@ export const {
 export const getEpisodesForPodcast = createAction(
   'rss/getEpisodesForPodcast',
   withPayloadType<Podcast>()
+)
+
+export const updateEpisodesForAllPodcasts = createAction(
+  'rss/updateEpisodesForAllPodcasts'
 )
