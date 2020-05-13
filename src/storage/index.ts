@@ -1,10 +1,11 @@
 import { select, takeLatest } from "redux-saga/effects";
+import { persistor, store } from './local-storage';
 
 const storageContiner = (() => {
   let storage = window.localStorage;
 
   const getStorage = () => storage
-  const setStorage = newStoarge => storage = newStoarge
+  const setStorage = newStorage => storage = newStorage
 
   return {
     getStorage,

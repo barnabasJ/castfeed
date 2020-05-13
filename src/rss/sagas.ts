@@ -1,7 +1,7 @@
 import { call, takeEvery, put } from 'redux-saga/effects'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { Podcast } from 'src/podcasts'
-import { parseStringPromise } from 'xml2js'
+import { parseStringPromise } from 'react-native-xml2js'
 import get from 'lodash/get'
 import curry from 'lodash/curry'
 import map from 'lodash/fp/map'

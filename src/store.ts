@@ -21,19 +21,20 @@ const reducer = {
   player
 }
 
-const preloadedState = loadState()
+// const preloadedState = loadState()
 
 const sagaMiddleware = createSagaMiddleware()
 const middleware = [...getDefaultMiddleware(), sagaMiddleware]
 
 const store = configureStore({
   reducer,
-  preloadedState,
+  //preloadedState,
   middleware
 })
 
+// Todo: fix localstorage for android
 sagaMiddleware.run(function * rootSaga () {
-  yield all([searchSaga(), playerSaga(), rssSaga(), episodesSaga(), storageSaga()])
+  yield all([searchSaga(), playerSaga(), rssSaga(), episodesSaga()])
 })
 
 export type RootState = ReturnType<typeof store.getState>
