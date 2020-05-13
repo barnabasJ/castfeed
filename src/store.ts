@@ -1,6 +1,7 @@
 import createSagaMiddleware from 'redux-saga'
 import { all } from 'redux-saga/effects'
-import { getDefaultMiddleware, configureStore, combineReducers } from '@reduxjs/toolkit'
+import { getDefaultMiddleware, configureStore, combineReducers, DeepPartial } from '@reduxjs/toolkit'
+import { useSelector as reactReduxUseSelector, TypedUseSelectorHook } from 'react-redux'
 
 import search from './search'
 import player from './player'
@@ -21,7 +22,7 @@ const reducer = combineReducers({
   player
 })
 
-const createStore = (preloadedState: Partial<RootState>) => {
+const createStore = (preloadedState: DeepPartial<RootState>) => {
   const sagaMiddleware = createSagaMiddleware()
   const middleware = [...getDefaultMiddleware(), sagaMiddleware]
 
@@ -37,4 +38,7 @@ const createStore = (preloadedState: Partial<RootState>) => {
   return store
 }
 export type RootState = ReturnType<typeof reducer>
+
+export const useSelector: TypedUseSelectorHook<RootState> = reactReduxUseSelector
+
 export default createStore

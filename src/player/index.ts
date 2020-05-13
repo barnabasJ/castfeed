@@ -2,13 +2,13 @@ import { PlaybackStatus } from 'expo-av/build/AV'
 import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit'
 import { withPayloadType } from 'src/utils'
 
-export interface Episode {
+export interface PlayableFile {
   uri: string
 }
 
 interface PlayerState {
   initialized: boolean
-  episode?: Episode
+  episode?: PlayableFile
   status?: PlaybackStatus
   error?: Error
 }
@@ -18,7 +18,7 @@ const initialState: PlayerState = {
 }
 
 interface PlayNewEpisodeFulfilledPayload {
-  episode: Episode
+  episode: PlayableFile
   status: PlaybackStatus
 }
 
@@ -44,7 +44,7 @@ const player = createSlice({
         state.episode = episode
         state.status = status
       },
-      prepare: (episode: Episode, status: PlaybackStatus) => ({
+      prepare: (episode: PlayableFile, status: PlaybackStatus) => ({
         payload: {
           episode,
           status
@@ -79,7 +79,7 @@ export const {
 export const initPlayer = createAction('player/init')
 export const playNewEpisode = createAction(
   'player/playNewEpisode',
-  withPayloadType<Episode>()
+  withPayloadType<PlayableFile>()
 )
 export const togglePlay = createAction('player/togglePlay')
 export const runUpdatePlayerStatus = createAction(

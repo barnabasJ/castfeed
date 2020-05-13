@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction, createEntityAdapter } from '@reduxjs/toolkit'
 import { withPayloadType } from 'src/utils'
-import filter from 'lodash/fp/filter'
+import { RootState } from 'src/store'
 
 export interface Podcast {
   artistName: string
@@ -29,7 +29,7 @@ export interface Podcast {
   trackExplicitness: string
   trackHdPrice: number
   trackHdRentalPrice: number
-  trackId: string
+  trackId: number
   trackName: string
   trackPrice: number
   trackRentalPrice: number
@@ -37,41 +37,26 @@ export interface Podcast {
   wrapperType: string
 }
 
-const unsubscribePodcasts = (
-  subscribedPodcasts: Array<Podcast>,
-  podcast: Podcast
-) =>
-  filter(
-    (subscribedPodcast: Podcast) =>
-      subscribedPodcast.trackId != podcast.trackId,
-    subscribedPodcasts
-  )
+const podcastAdapter = createEntityAdapter({
+  selectId: ({ trackId }: Podcast) => trackId,
+  sortComparer: (p1: Podcast, p2: Podcast) => (p1.trackId - p2.trackId) % 2
+})
 
-interface PodcastState {
-  subscribedPodcasts: {
-    [key: string]: Podcast
-  }
-}
-
-const initialState: PodcastState = {
-  subscribedPodcasts: {}
-}
+type PodcastState = ReturnType<typeof podcastAdapter.getInitialState>
 
 const podcasts = createSlice({
   name: 'podcasts',
-  initialState,
+  initialState: podcastAdapter.getInitialState(),
   reducers: {
     subscribeToPodcast: {
       reducer: (state, action: PayloadAction<Podcast>) => {
-        const podcast = action.payload
-        state.subscribedPodcasts[podcast.trackId]= podcast
+        podcastAdapter.upsertOne(state, action.payload)
       },
       prepare: withPayloadType<Podcast>()
     },
     unsubscribeFromPodcast: {
       reducer: (state, action: PayloadAction<Podcast>) => {
-        const podcast = action.payload
-        delete state.subscribedPodcasts[podcast.trackId]
+        podcastAdapter.removeOne(state, action.payload.trackId)
       },
       prepare: withPayloadType<Podcast>()
     }
@@ -81,3 +66,7 @@ const podcasts = createSlice({
 export default podcasts.reducer
 
 export const { subscribeToPodcast, unsubscribeFromPodcast } = podcasts.actions
+
+export const {
+  selectAll
+} = podcastAdapter.getSelectors((state: RootState) => state.podcasts)

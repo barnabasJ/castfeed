@@ -1,31 +1,31 @@
 import React from 'react'
-import { Text, View } from 'react-native'
-import { Search } from 'src/components/search';
-import { useSelector } from 'react-redux'
-import { RootState } from 'src/store'
-import  map  from 'lodash/map'
-import { Podcast } from 'src/podcasts';
-import { PlaybackStatus } from 'expo-av/build/AV';
+import { View } from 'react-native'
+import map from 'lodash/map'
+import { Podcast, selectAll } from 'src/podcasts'
+import { FlatList, ScrollView } from 'react-native-gesture-handler'
+import { PodcastListItem, IListItem } from 'src/components/listitem'
+import { createSelector } from 'reselect'
+import { useSelector } from 'src/store'
+import { Search } from 'src/components/search'
+
+const podcastAsListItemSelector = createSelector(
+  selectAll,
+  (podcasts) => map(podcasts, ({ trackId, trackName, artworkUrl100 }: Podcast): IListItem => ({
+    id: trackId.toString(),
+    title: trackName,
+    thumbUrl: artworkUrl100
+  })))
 
 export const PodcastScreen: React.FunctionComponent<{}> = () => {
-  const podcasts = useSelector((state: RootState) => state.podcasts.subscribedPodcasts)
-  console.log("podcast screen->podcasts", podcasts)
+  const podcastsItems = useSelector(podcastAsListItemSelector)
   return (
-    <View>
-      <Text>Podcast Screen</Text>
-      <Search/>
-      <Text>Subscribed Podcasts</Text>
-      {map(podcasts, (p: Podcast, id) => 
-        <Text key={p.trackId}>{p.trackName}</Text>
-      )}
+    <View style={{ flex: 1 }}>
+      <Search />
+      <FlatList
+        data={podcastsItems}
+        keyExtractor={({ id }: IListItem) => id}
+        renderItem={({ item }) => <PodcastListItem item={item}/>}
+      />
     </View>
-  )
-}
-
-export const Player: React.FunctionComponent = () => {
-  const { positionMillis } = useSelector((state: RootState) => state.player.status) || {}
-  return (
-    
-  positionMillis ? <Text>{positionMillis}</Text> : <Text>Nothing Playing</Text>
   )
 }

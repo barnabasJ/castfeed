@@ -1,5 +1,7 @@
 import { select, takeLatest } from 'redux-saga/effects'
 import { AsyncStorage } from 'react-native'
+import { createSelector } from '@reduxjs/toolkit'
+import { RootState } from 'src/store'
 
 const storageContainer = (() => {
   let storage = AsyncStorage
@@ -17,16 +19,23 @@ const storageKey = 'castfeed'
 
 export const loadState = async () => JSON.parse(await storageContainer.getStorage().getItem(storageKey) || '{}')
 
+const selectPodcasts = (state: RootState) => state.podcasts
+const selectEpisodes = (state: RootState) => state.episodes
+
+const dataToSaveSelector = createSelector(
+  [selectPodcasts, selectEpisodes],
+  (podcasts, episodes) => ({
+    podcasts,
+    episodes
+  })
+)
+
 let lastState = null
 export function * handleSave () {
   const storage = storageContainer.getStorage()
-  const state = yield select(({ podcasts, episodes }) => ({
-    podcasts,
-    episodes
-  }))
-  console.log(lastState, state)
-  if (lastState != state) {
-    console.log('save state')
+  const state = yield select(dataToSaveSelector)
+  if (lastState !== state) {
+    console.log('saving state', state)
     lastState = state
     storage.setItem(storageKey, JSON.stringify(state))
   }
