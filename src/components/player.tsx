@@ -11,39 +11,41 @@ import {
   Platform
 } from 'react-native'
 import WebSlider from 'react-native-slider-web'
-import { useToast } from 'src/components/toast'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../store'
 import { MaterialIcons } from '@expo/vector-icons'
-import { initPlayer, playNewEpisode, setRate, skipBackward, togglePlay, skipForward } from '../player'
-import colors from '../styles/colors'
+import { createSelector } from '@reduxjs/toolkit'
+import { initPlayer, playNewEpisode, setRate, skipBackward, togglePlay, skipForward } from 'src/player'
+import { selectEntities } from 'src/episodes'
+import { selectCurrentEpisode } from 'src/playlist'
+import { useToast } from 'src/components/toast'
+import colors from 'src/styles/colors'
+import { RootState } from 'srcstore'
 
 const Slider = Platform.OS === 'web' ? WebSlider : NativeSlider
+
+const currentEpisodeSelector = createSelector(
+  selectCurrentEpisode,
+  selectEntities,
+  (id, episodes) => id && episodes[id]
+)
 
 export default function Player () {
   const Toast = useToast()
   const dispatch = useDispatch()
-  const { positionMillis } = useSelector((state: RootState) => state.player.status) || {}
-  const { durationMillis } = useSelector((state: RootState) => state.player.status) || {}
-  const { isLoaded } = useSelector((state: RootState) => state.player.status) || {}
-  const { isPlaying } = useSelector((state: RootState) => state.player.status) || {}
-  const { rate } = useSelector((state: RootState) => state.player.status) || {}
-  const { isBuffering } = useSelector((state: RootState) => state.player.status) || {}
-  const { uri } = useSelector((state: RootState) => state.player.episode) || {}
+  const episode = useSelector(currentEpisodeSelector)
+  const playbackStatus = useSelector((state: RootState) => state.player.status)
 
-  const currentEpisode = 'https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/' +
-      'Comfort_Fit_-_03_-_Sorry.mp3'
-  const [position, setPosition] = useState(0)
-  const [speed, setSpeed] = useState(1)
-  const [episode, setEpisode] = useState(() => dispatch(
-    playNewEpisode({ uri: currentEpisode })
-  ))
+  const {
+    positionMillis = null,
+    durationMillis = null,
+    isLoaded = false,
+    isPlaying = false,
+    rate = 1
+  } = playbackStatus && playbackStatus.isLoaded ? playbackStatus : {}
 
   const onPositionSliderChange = position => {
     dispatch(skipBackward(positionMillis - position))
   }
-
-  const onRateSliderChange = position => dispatch(setRate(position))
 
   const millisToTime = (positionMillis) => {
     const positionSeconds = Math.floor((positionMillis / 1000) % 60)
@@ -72,14 +74,18 @@ export default function Player () {
       <StatusBar backgroundColor="black"/>
       <SafeAreaView style={styles.container}>
         <View style={styles.hero} >
-          <Image style={styles.image}
-            source={{
-              uri: 'https://picsum.photos/400'
-            }}
-          />
-          <Text style={styles.episodeText}>
-            {currentEpisode.substring(currentEpisode.lastIndexOf('/') + 1)}
-          </Text>
+          {episode && (
+            <>
+              <Image style={styles.image}
+                source={{
+                  uri: episode.image
+                }}
+              />
+              <Text style={styles.episodeText}>
+                {episode.title}
+              </Text>
+            </>
+          )}
         </View>
         <View style={styles.positionSlider}>
           <Slider

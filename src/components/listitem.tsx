@@ -4,8 +4,8 @@ import { MaterialIcons } from '@expo/vector-icons'
 import truncate from 'lodash/truncate'
 import colors from '../styles/colors'
 import { useDispatch } from 'react-redux'
-import { playNewEpisode } from 'src/player/index'
 import { TouchableOpacity } from 'react-native-gesture-handler'
+import { addPlayNow } from 'src/playlist'
 
 const style = StyleSheet.create({
   container: {
@@ -76,7 +76,7 @@ export const PlayListElement: ListItemElement = ({ item }) => {
   const file = item.file
 
   const onPress = useCallback(() => {
-    if (file) { dispatch(playNewEpisode({ uri: item.file.url })) }
+    if (file) { dispatch(addPlayNow(item.id)) }
   }, [item, dispatch])
 
   return file ? (

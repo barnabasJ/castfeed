@@ -48,5 +48,7 @@ const episodes = createSlice({
 export default episodes.reducer
 
 export const {
-  selectAll
+  selectAll,
+  selectById,
+  selectEntities
 } = episodeAdapter.getSelectors((state: RootState) => state.episodes)
