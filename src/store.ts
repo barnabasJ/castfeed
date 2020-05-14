@@ -8,18 +8,21 @@ import player from './player'
 import podcasts from './podcasts'
 import episodes from './episodes'
 import rss from './rss'
+import playlist from './playlist'
 import { rootSaga as playerSaga } from './player/sagas'
 import { episodesSaga } from './episodes/sagas'
 import { searchSaga } from './search/sagas'
 import { rssSaga } from './rss/sagas'
 import { storageSaga } from './storage'
+import { playlistSaga } from './playlist/sagas'
 
 const reducer = combineReducers({
   podcasts,
   episodes,
   search,
   rss,
-  player
+  player,
+  playlist
 })
 
 const createStore = (preloadedState: DeepPartial<RootState>) => {
@@ -33,7 +36,7 @@ const createStore = (preloadedState: DeepPartial<RootState>) => {
   })
 
   sagaMiddleware.run(function * rootSaga () {
-    yield all([searchSaga(), playerSaga(), rssSaga(), episodesSaga(), storageSaga()])
+    yield all([searchSaga(), playerSaga(), playlistSaga(), rssSaga(), episodesSaga(), storageSaga()])
   })
   return store
 }
