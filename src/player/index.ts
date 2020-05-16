@@ -1,6 +1,7 @@
 import { PlaybackStatus } from 'expo-av/build/AV'
-import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction, createAction, createSelector } from '@reduxjs/toolkit'
 import { withPayloadType } from 'src/utils'
+import { RootState } from 'src/store'
 
 export interface PlayableFile {
   uri: string
@@ -35,7 +36,7 @@ const player = createSlice({
       },
       prepare: withPayloadType<Error>()
     },
-    playNewEpisodeFulfilled: {
+    playNewFileFulfilled: {
       reducer: (
         state,
         action: PayloadAction<PlayNewEpisodeFulfilledPayload>
@@ -51,7 +52,7 @@ const player = createSlice({
         }
       })
     },
-    playNewEpisodeRejected: {
+    playNewFileRejected: {
       reducer: (state): void => {
         state.initialized = false
       },
@@ -71,17 +72,24 @@ export default player.reducer
 export const {
   initFulfilled,
   initRejected,
-  playNewEpisodeFulfilled,
-  playNewEpisodeRejected,
+  playNewFileFulfilled,
+  playNewFileRejected,
   updatePlayerStatus
 } = player.actions
 
+export const selectPlayer = (state: RootState): PlayerState => state.player
+
+export const selectStatus = createSelector(selectPlayer, (playerState) => playerState.status)
+
 export const initPlayer = createAction('player/init')
-export const playNewEpisode = createAction(
-  'player/playNewEpisode',
+export const playNewFile = createAction(
+  'player/playNewFile',
   withPayloadType<PlayableFile>()
 )
-export const togglePlay = createAction('player/togglePlay')
+export const play = createAction(
+  'player/play'
+)
+export const pause = createAction('player/pause')
 export const runUpdatePlayerStatus = createAction(
   'player/runUpdateStatus',
   withPayloadType<number>()

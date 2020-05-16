@@ -15,18 +15,19 @@ import get from 'lodash/get'
 import { PlaybackStatus } from 'expo-av/build/AV'
 import {
   initPlayer,
-  playNewEpisode,
+  playNewFile,
   runUpdatePlayerStatus,
   stopUpdatePlayerStatus,
-  togglePlay,
+  play,
+  pause,
   skipForward,
   skipBackward,
   setRate,
   initFulfilled,
   initRejected,
   updatePlayerStatus,
-  playNewEpisodeFulfilled,
-  playNewEpisodeRejected,
+  playNewFileFulfilled,
+  playNewFileRejected,
   PlayableFile
 } from '.'
 import { PayloadAction } from '@reduxjs/toolkit'
@@ -85,14 +86,14 @@ function * handleRunUpdatePlayerStatus ({
   yield cancel(updater)
 }
 
-function * handlePlayerPlayNewEpisode (action: PayloadAction<PlayableFile>) {
+function * handlePlayerPlayFile (action: PayloadAction<PlayableFile>) {
   try {
-    const episode = action.payload
+    const file = action.payload
     const sound = soundContainer.getSound()
     if (sound) {
       yield call(sound.stopAsync.bind(sound))
     }
-    const source = { uri: episode.uri }
+    const source = file
     const { sound: newSound, status } = yield call(
       Audio.Sound.createAsync,
       source,
@@ -100,14 +101,35 @@ function * handlePlayerPlayNewEpisode (action: PayloadAction<PlayableFile>) {
     )
     soundContainer.setSound(newSound)
     yield put(runUpdatePlayerStatus(500))
-    yield put(playNewEpisodeFulfilled(episode, status))
+    yield put(playNewFileFulfilled(file, status))
   } catch (e) {
     console.log(e)
-    yield put(playNewEpisodeRejected(e))
+    yield put(playNewFileRejected(e))
   }
 }
 
-function * handleTogglePlay () {
+function * handlePlay () {
+  const status: PlaybackStatus | null = yield select(getStatus)
+  const sound = soundContainer.getSound()
+  if (sound) {
+    if (status.isLoaded && status.isPlaying) {
+      yield call(sound.pauseAsync.bind(sound))
+      while (true) {
+        const nextStatus: PlaybackStatus | null = yield select(getStatus)
+        if (!get(nextStatus, 'isPlaying')) {
+          yield put(stopUpdatePlayerStatus())
+          break
+        }
+        yield delay(500)
+      }
+    } else {
+      yield call(sound.playAsync.bind(sound))
+      yield put(runUpdatePlayerStatus(500))
+    }
+  }
+}
+
+function * handlePause () {
   const status: PlaybackStatus | null = yield select(getStatus)
   const sound = soundContainer.getSound()
   if (sound) {
@@ -161,12 +183,13 @@ function * handleSetRate ({ payload: rate }: PayloadAction<number>) {
 
 export function * rootSaga () {
   yield takeLatest(initPlayer.toString(), handlePlayerInit)
-  yield takeLatest(playNewEpisode.toString(), handlePlayerPlayNewEpisode)
+  yield takeLatest(playNewFile.toString(), handlePlayerPlayFile)
   yield takeLatest(
     runUpdatePlayerStatus.toString(),
     handleRunUpdatePlayerStatus
   )
-  yield takeLeading(togglePlay.toString(), handleTogglePlay)
+  yield takeLeading(play.toString(), handlePlay)
+  yield takeLeading(pause.toString(), handlePause)
   yield takeEvery(skipForward.toString(), handleSkipForward)
   yield takeEvery(skipBackward.toString(), handleSkipBackward)
   yield takeLatest(setRate.toString(), handleSetRate)

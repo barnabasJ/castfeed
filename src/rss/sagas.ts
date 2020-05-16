@@ -40,7 +40,7 @@ const itemToEpisode = curry(
     description: get(item, 'description[0]'),
     image: get(item, 'itunes:image[0].$.href') || podcast.artworkUrl600,
     file: {
-      url: get(item, 'enclosure[0].$.url'),
+      uri: get(item, 'enclosure[0].$.url'),
       type: get(item, 'enclosure[0].$.type'),
       length: get(item, 'enclosure[0].$.length')
     }

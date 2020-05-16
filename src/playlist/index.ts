@@ -79,4 +79,4 @@ export const {
 
 export const selectPlaylist = (state: RootState): PlaylistState => state.playlist
 
-export const selectCurrentEpisode = (state: RootState): null | string => get(selectPlaylist(state), 'playlist[0]') || null
+export const selectCurrent = (state: RootState) => get(selectPlaylist(state), 'playlist[0]') || null

@@ -13,28 +13,19 @@ import {
 import WebSlider from 'react-native-slider-web'
 import { useSelector, useDispatch } from 'react-redux'
 import { MaterialIcons } from '@expo/vector-icons'
-import { createSelector } from '@reduxjs/toolkit'
-import { initPlayer, setRate, skipBackward, togglePlay, skipForward } from 'src/player'
-import { selectEntities } from 'src/episodes'
-import { selectCurrentEpisode } from 'src/playlist'
+import { initPlayer, setRate, skipBackward, skipForward } from 'src/player'
+import { togglePlay } from 'src/podcast-player'
+import { selectCurrentEpisode } from 'src/episodes'
 import { useToast } from 'src/components/toast'
 import colors from 'src/styles/colors'
 import { RootState } from 'src/store'
 
 const Slider = Platform.OS === 'web' ? WebSlider : NativeSlider
 
-const currentEpisodeSelector = createSelector(
-  selectCurrentEpisode,
-  selectEntities,
-  (id, episodes) => {
-    return id && episodes[id]
-  }
-)
-
 export default function Player () {
   const Toast = useToast()
   const dispatch = useDispatch()
-  const episode = useSelector(currentEpisodeSelector)
+  const episode = useSelector(selectCurrentEpisode)
   const playbackStatus = useSelector((state: RootState) => state.player.status)
 
   const {

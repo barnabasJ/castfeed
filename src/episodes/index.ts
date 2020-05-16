@@ -1,7 +1,8 @@
-import { createSlice, createEntityAdapter } from '@reduxjs/toolkit'
+import { createSlice, createEntityAdapter, createSelector } from '@reduxjs/toolkit'
 import { getEpisodesForPodcastFulfilled } from 'src/rss'
 import { unsubscribeFromPodcast } from 'src/podcasts'
 import { RootState } from 'src/store'
+import { selectCurrent } from 'src/playlist'
 
 export interface Episode {
   id: string
@@ -16,7 +17,7 @@ export interface Episode {
   description: string
   image: string
   file: {
-    url: string
+    uri: string
     type: string
     length: number
   }
@@ -52,3 +53,11 @@ export const {
   selectById,
   selectEntities
 } = episodeAdapter.getSelectors((state: RootState) => state.episodes)
+
+export const selectCurrentEpisode = createSelector(
+  selectCurrent,
+  selectEntities,
+  (id, episodes) => {
+    return id && episodes[id]
+  }
+)
