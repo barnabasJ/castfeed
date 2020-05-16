@@ -86,6 +86,9 @@ export const runUpdatePlayerStatus = createAction(
   'player/runUpdateStatus',
   withPayloadType<number>()
 )
+export const stopUpdatePlayerStatus = createAction(
+  'player/stopUpdateStatus'
+)
 export const skipForward = createAction(
   'player/skipForward',
   withPayloadType<number>()
