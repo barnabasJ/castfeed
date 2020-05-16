@@ -60,16 +60,11 @@ export function * handleGetEpisodesForPodcast ({
   payload: podcast
 }: PayloadAction<Podcast>) {
   try {
-    debugger
     const feed = yield call(fetchFeed, podcast.feedUrl)
-    console.log(feed)
     const items = yield call(parseFeed, feed)
-    console.log(items)
     const episodes = itemsToEpisodes(items, podcast)
-    console.log(episodes)
     yield put(getEpisodesForPodcastFulfilled(podcast, episodes))
   } catch (e) {
-    console.log(e)
     yield put(getEpisodesForPodcastRejected(e))
   }
 }

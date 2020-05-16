@@ -21,12 +21,14 @@ export const loadState = async () => JSON.parse(await storageContainer.getStorag
 
 const selectPodcasts = (state: RootState) => state.podcasts
 const selectEpisodes = (state: RootState) => state.episodes
+const selectPlaylist = (state: RootState) => state.playlist
 
 const dataToSaveSelector = createSelector(
-  [selectPodcasts, selectEpisodes],
-  (podcasts, episodes) => ({
+  [selectPodcasts, selectEpisodes, selectPlaylist],
+  (podcasts, episodes, playlist) => ({
     podcasts,
-    episodes
+    episodes,
+    playlist
   })
 )
 

@@ -2,15 +2,29 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import get from 'lodash/get'
 import isEmpty from 'lodash/isEmpty'
 import concat from 'lodash/concat'
+import filter from 'lodash/filter'
+import has from 'lodash/has'
 import { withPayloadType } from 'src/utils'
 import { RootState } from 'src/store'
 
 interface PlaylistState {
-  episodes: string[]
+  playlist: string[]
+  episodes: {
+    [key: string]: any
+  }
 }
 
 const initialState: PlaylistState = {
-  episodes: []
+  playlist: [],
+  episodes: {}
+
+}
+
+function prepareForInsert (id, state) {
+  if (has(state.episodes, id)) {
+    state.playlist = filter(state.playlist, pId => pId !== id)
+  }
+  state.episodes[id] = true
 }
 
 const playlist = createSlice({
@@ -19,21 +33,35 @@ const playlist = createSlice({
   reducers: {
     addPayLast: {
       reducer: (state, action: PayloadAction<string>) => {
-        state.episodes = concat(state.episodes, action.payload)
+        prepareForInsert(action.payload, state)
+        state.playlist = concat(state.playlist, action.payload)
       },
       prepare: withPayloadType<string>()
     },
     addPlayNext: {
       reducer: (state, action: PayloadAction<string>) => {
-        if (isEmpty(state.episodes)) state.episodes = [action.payload]
-        const [current, ...next] = state.episodes
-        state.episodes = concat(current, action.payload, next)
+        const id = action.payload
+        prepareForInsert(id, state)
+        if (isEmpty(state.playlist)) state.playlist = [id]
+        const [current, ...next] = state.playlist
+        state.playlist = concat(current, id, next)
       },
       prepare: withPayloadType<string>()
     },
     addPlayNow: {
       reducer: (state, action: PayloadAction<string>) => {
-        state.episodes = concat(action.payload, state.episodes)
+        prepareForInsert(action.payload, state)
+        state.playlist = concat(action.payload, state.playlist)
+      },
+      prepare: withPayloadType<string>()
+    },
+    removeFromPlaylist: {
+      reducer: (state, action: PayloadAction<string>) => {
+        const id = action.payload
+        if (has(state.episodes, id)) {
+          state.playlist = filter(state.playlist, pId => pId !== id)
+        }
+        delete state.episodes[id]
       },
       prepare: withPayloadType<string>()
     }
@@ -45,9 +73,10 @@ export default playlist.reducer
 export const {
   addPlayNow,
   addPlayNext,
-  addPayLast
+  addPayLast,
+  removeFromPlaylist
 } = playlist.actions
 
 export const selectPlaylist = (state: RootState): PlaylistState => state.playlist
 
-export const selectCurrentEpisode = (state: RootState): null | string => get(selectPlaylist(state), 'episodes[0]') || null
+export const selectCurrentEpisode = (state: RootState): null | string => get(selectPlaylist(state), 'playlist[0]') || null

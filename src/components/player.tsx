@@ -14,19 +14,21 @@ import WebSlider from 'react-native-slider-web'
 import { useSelector, useDispatch } from 'react-redux'
 import { MaterialIcons } from '@expo/vector-icons'
 import { createSelector } from '@reduxjs/toolkit'
-import { initPlayer, playNewEpisode, setRate, skipBackward, togglePlay, skipForward } from 'src/player'
+import { initPlayer, setRate, skipBackward, togglePlay, skipForward } from 'src/player'
 import { selectEntities } from 'src/episodes'
 import { selectCurrentEpisode } from 'src/playlist'
 import { useToast } from 'src/components/toast'
 import colors from 'src/styles/colors'
-import { RootState } from 'srcstore'
+import { RootState } from 'src/store'
 
 const Slider = Platform.OS === 'web' ? WebSlider : NativeSlider
 
 const currentEpisodeSelector = createSelector(
   selectCurrentEpisode,
   selectEntities,
-  (id, episodes) => id && episodes[id]
+  (id, episodes) => {
+    return id && episodes[id]
+  }
 )
 
 export default function Player () {
@@ -60,8 +62,6 @@ export default function Player () {
          ('00' + positionSeconds).substr(-2, 2)
     )
   }
-  console.log(Math.floor(positionMillis))
-  console.log(Math.floor(rate))
 
   useEffect(() => {
     if (!isLoaded) {
@@ -165,8 +165,7 @@ const styles = StyleSheet.create({
     margin: 10
   },
   hero: {
-    height: 310,
-    textAlign: 'center'
+    height: 310
   },
   image: {
     height: '90%',
