@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import {
   StyleSheet,
   Text,
@@ -156,7 +156,8 @@ const styles = StyleSheet.create({
     margin: 10
   },
   hero: {
-    height: 310
+    height: 310,
+    width: '100%'
   },
   image: {
     height: '90%',

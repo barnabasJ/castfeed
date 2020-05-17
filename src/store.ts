@@ -9,6 +9,7 @@ import podcasts from './podcasts'
 import episodes from './episodes'
 import rss from './rss'
 import playlist from './playlist'
+import status from './status'
 import { rootSaga as playerSaga } from './player/sagas'
 import { episodesSaga } from './episodes/sagas'
 import { searchSaga } from './search/sagas'
@@ -18,12 +19,13 @@ import { playlistSaga } from './playlist/sagas'
 import podcastPlayerSaga from './podcast-player/sagas'
 
 const reducer = combineReducers({
-  podcasts,
   episodes,
-  search,
-  rss,
   player,
-  playlist
+  playlist,
+  podcasts,
+  rss,
+  search,
+  status
 })
 
 const createStore = (preloadedState: DeepPartial<RootState>) => {

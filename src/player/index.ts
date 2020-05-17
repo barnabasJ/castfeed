@@ -3,13 +3,13 @@ import { createSlice, PayloadAction, createAction, createSelector } from '@redux
 import { withPayloadType } from 'src/utils'
 import { RootState } from 'src/store'
 
-export interface PlayableFile {
+export interface IPlayableFile {
   uri: string
 }
 
 interface PlayerState {
   initialized: boolean
-  episode?: PlayableFile
+  episode?: IPlayableFile
   status?: PlaybackStatus
   error?: Error
 }
@@ -19,7 +19,7 @@ const initialState: PlayerState = {
 }
 
 interface PlayNewEpisodeFulfilledPayload {
-  episode: PlayableFile
+  episode: IPlayableFile
   status: PlaybackStatus
 }
 
@@ -45,7 +45,7 @@ const player = createSlice({
         state.episode = episode
         state.status = status
       },
-      prepare: (episode: PlayableFile, status: PlaybackStatus) => ({
+      prepare: (episode: IPlayableFile, status: PlaybackStatus) => ({
         payload: {
           episode,
           status
@@ -84,7 +84,7 @@ export const selectStatus = createSelector(selectPlayer, (playerState) => player
 export const initPlayer = createAction('player/init')
 export const playNewFile = createAction(
   'player/playNewFile',
-  withPayloadType<PlayableFile>()
+  withPayloadType<IPlayableFile>()
 )
 export const play = createAction(
   'player/play'

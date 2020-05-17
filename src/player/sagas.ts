@@ -28,7 +28,7 @@ import {
   updatePlayerStatus,
   playNewFileFulfilled,
   playNewFileRejected,
-  PlayableFile,
+  IPlayableFile,
   fileFinishedPlaying
 } from '.'
 import { PayloadAction } from '@reduxjs/toolkit'
@@ -97,7 +97,7 @@ function * watchForFileFinished (action: PayloadAction<PlaybackStatus>) {
   }
 }
 
-function * handlePlayerPlayFile (action: PayloadAction<PlayableFile>) {
+function * handlePlayerPlayFile (action: PayloadAction<IPlayableFile>) {
   try {
     const file = action.payload
     const sound = soundContainer.getSound()
