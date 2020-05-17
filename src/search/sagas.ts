@@ -1,13 +1,16 @@
-import { call, put, takeLatest, delay } from 'redux-saga/effects'
+import { call, put, debounce } from 'redux-saga/effects'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { searchPodcastFulfilled, searchPodcastRejected, searchPodcast } from '.'
+import { Platform } from 'react-native'
+
+const CORS_ANYWHERE = 'https://cors-anywhere.herokuapp.com/'
 
 export function * searchPodcastSaga ({ payload: term }: PayloadAction<string>) {
   try {
-    yield delay(100) // debounce
+    const query = `https://itunes.apple.com/search?media=podcast&term=${term}`
+
     const resp = yield call(
-      fetch,
-      `https://itunes.apple.com/search?media=podcast&term=${term}`
+      fetch, Platform.OS === 'web' ? CORS_ANYWHERE + query : query
     )
     const { results } = yield call(resp.json.bind(resp))
     yield put(searchPodcastFulfilled(results))
@@ -18,5 +21,5 @@ export function * searchPodcastSaga ({ payload: term }: PayloadAction<string>) {
 }
 
 export function * searchSaga () {
-  yield takeLatest(searchPodcast.toString(), searchPodcastSaga)
+  yield debounce(100, searchPodcast.toString(), searchPodcastSaga)
 }

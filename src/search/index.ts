@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit'
 import { withPayloadType } from 'src/utils'
 import { Podcast } from 'src/podcasts'
+import { serializeError } from 'serialize-error'
 
 interface SearchState {
   term: string
@@ -27,7 +28,9 @@ const search = createSlice({
       reducer: (state, action: PayloadAction<Error>) => {
         state.error = action.payload
       },
-      prepare: withPayloadType<Error>()
+      prepare: (error) => ({
+        payload: serializeError(error)
+      })
     }
   }
 })
