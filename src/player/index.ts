@@ -106,3 +106,4 @@ export const skipBackward = createAction(
   withPayloadType<number>()
 )
 export const setRate = createAction('player/setRate', withPayloadType<number>())
+export const fileFinishedPlaying = createAction('player/fileFinishedPlaying')

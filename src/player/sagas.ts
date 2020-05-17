@@ -28,7 +28,8 @@ import {
   updatePlayerStatus,
   playNewFileFulfilled,
   playNewFileRejected,
-  PlayableFile
+  PlayableFile,
+  fileFinishedPlaying
 } from '.'
 import { PayloadAction } from '@reduxjs/toolkit'
 
@@ -84,6 +85,18 @@ function * handleRunUpdatePlayerStatus ({
   const updater = yield fork(doUpdatePlayerStatus, interval, sound)
   yield take(stopUpdatePlayerStatus.toString())
   yield cancel(updater)
+}
+
+function * watchForFileFinished (action: PayloadAction<PlaybackStatus>) {
+  const status = action.payload
+  console.log('watchForFileFinished', status)
+  if (status.isLoaded) {
+    if (status.durationMillis - status.positionMillis <= 0.001 && !status.isPlaying) {
+      console.log('finished file')
+      yield put(stopUpdatePlayerStatus())
+      yield put(fileFinishedPlaying())
+    }
+  }
 }
 
 function * handlePlayerPlayFile (action: PayloadAction<PlayableFile>) {
@@ -168,10 +181,8 @@ function * handleSetRate ({ payload: rate }: PayloadAction<number>) {
 export function * rootSaga () {
   yield takeLatest(initPlayer.toString(), handlePlayerInit)
   yield takeLatest(playNewFile.toString(), handlePlayerPlayFile)
-  yield takeLatest(
-    runUpdatePlayerStatus.toString(),
-    handleRunUpdatePlayerStatus
-  )
+  yield takeLatest(runUpdatePlayerStatus.toString(), handleRunUpdatePlayerStatus)
+  yield takeLatest(updatePlayerStatus.toString(), watchForFileFinished)
   yield takeLeading(play.toString(), handlePlay)
   yield takeLeading(pause.toString(), handlePause)
   yield takeEvery(skipForward.toString(), handleSkipForward)
