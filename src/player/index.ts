@@ -2,6 +2,7 @@ import { PlaybackStatus } from 'expo-av/build/AV'
 import { createSlice, PayloadAction, createAction, createSelector } from '@reduxjs/toolkit'
 import { withPayloadType } from 'src/utils'
 import { RootState } from 'src/store'
+import { IEpisodeStatus } from 'src/status'
 
 export interface IPlayableFile {
   uri: string
@@ -84,7 +85,11 @@ export const selectStatus = createSelector(selectPlayer, (playerState) => player
 export const initPlayer = createAction('player/init')
 export const playNewFile = createAction(
   'player/playNewFile',
-  withPayloadType<IPlayableFile>()
+  (file: IPlayableFile, status: IEpisodeStatus) => ({
+    payload: {
+      file, status
+    }
+  })
 )
 export const play = createAction(
   'player/play'

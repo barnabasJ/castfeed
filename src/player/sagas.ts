@@ -12,6 +12,8 @@ import {
   fork
 } from 'redux-saga/effects'
 import get from 'lodash/get'
+import merge from 'lodash/merge'
+import pick from 'lodash/pick'
 import { PlaybackStatus } from 'expo-av/build/AV'
 import {
   initPlayer,
@@ -28,7 +30,6 @@ import {
   updatePlayerStatus,
   playNewFileFulfilled,
   playNewFileRejected,
-  IPlayableFile,
   fileFinishedPlaying
 } from '.'
 import { PayloadAction } from '@reduxjs/toolkit'
@@ -97,9 +98,9 @@ function * watchForFileFinished (action: PayloadAction<PlaybackStatus>) {
   }
 }
 
-function * handlePlayerPlayFile (action: PayloadAction<IPlayableFile>) {
+function * handlePlayerPlayFile (action: ReturnType<typeof playNewFile>) {
   try {
-    const file = action.payload
+    const { file, status: episodeStatus } = action.payload
     const sound = soundContainer.getSound()
     if (sound) {
       yield call(sound.stopAsync.bind(sound))
@@ -108,7 +109,7 @@ function * handlePlayerPlayFile (action: PayloadAction<IPlayableFile>) {
     const { sound: newSound, status } = yield call(
       Audio.Sound.createAsync,
       source,
-      initialStatus
+      merge({}, initialStatus, pick(episodeStatus, 'positionMillis'))
     )
     soundContainer.setSound(newSound)
     yield put(runUpdatePlayerStatus(500))

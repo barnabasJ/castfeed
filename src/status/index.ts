@@ -5,7 +5,7 @@ import { PlaybackStatus } from 'expo-av/build/AV'
 import { Episode } from 'src/episodes'
 import { RootState } from 'src/store'
 
-interface IEpisodeStatus {
+export interface IEpisodeStatus {
   id: string
   positionMillis: number
   durationMillis: number
@@ -48,6 +48,11 @@ export default status.reducer
 export const selectStatus = (state: RootState) => state.status
 
 export const {
+  updatesStatus
+} = status.actions
+
+export const {
   selectAll,
-  selectById
+  selectById,
+  selectEntities
 } = statusAdapter.getSelectors(selectStatus)

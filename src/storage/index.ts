@@ -1,7 +1,8 @@
-import { select, takeLatest } from 'redux-saga/effects'
+import { select, throttle } from 'redux-saga/effects'
 import { AsyncStorage } from 'react-native'
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from 'src/store'
+import { selectStatus } from 'src/status'
 
 const storageContainer = (() => {
   let storage = AsyncStorage
@@ -24,11 +25,12 @@ const selectEpisodes = (state: RootState) => state.episodes
 const selectPlaylist = (state: RootState) => state.playlist
 
 const dataToSaveSelector = createSelector(
-  [selectPodcasts, selectEpisodes, selectPlaylist],
-  (podcasts, episodes, playlist) => ({
+  [selectPodcasts, selectEpisodes, selectPlaylist, selectStatus],
+  (podcasts, episodes, playlist, status) => ({
     podcasts,
     episodes,
-    playlist
+    playlist,
+    status
   })
 )
 
@@ -44,5 +46,5 @@ export function * handleSave () {
 }
 
 export function * storageSaga () {
-  yield takeLatest('*', handleSave)
+  yield throttle(10 * 1000, '*', handleSave)
 }
