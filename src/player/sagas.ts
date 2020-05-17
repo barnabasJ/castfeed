@@ -143,9 +143,6 @@ function * handlePause () {
         }
         yield delay(500)
       }
-    } else {
-      yield call(sound.playAsync.bind(sound))
-      yield put(runUpdatePlayerStatus(500))
     }
   }
 }
