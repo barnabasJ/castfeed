@@ -55,6 +55,11 @@ const playlist = createSlice({
       },
       prepare: withPayloadType<string>()
     },
+    stepToNext: (state) => {
+      const [current, ...next] = state.playlist
+      delete state.episodes[current]
+      state.playlist = next
+    },
     removeFromPlaylist: {
       reducer: (state, action: PayloadAction<string>) => {
         const id = action.payload
@@ -74,6 +79,7 @@ export const {
   addPlayNow,
   addPlayNext,
   addPayLast,
+  stepToNext,
   removeFromPlaylist
 } = playlist.actions
 

@@ -89,10 +89,8 @@ function * handleRunUpdatePlayerStatus ({
 
 function * watchForFileFinished (action: PayloadAction<PlaybackStatus>) {
   const status = action.payload
-  console.log('watchForFileFinished', status)
   if (status.isLoaded) {
-    if (status.durationMillis - status.positionMillis <= 0.001 && !status.isPlaying) {
-      console.log('finished file')
+    if (status.didJustFinish) {
       yield put(stopUpdatePlayerStatus())
       yield put(fileFinishedPlaying())
     }

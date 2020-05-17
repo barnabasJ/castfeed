@@ -2,10 +2,10 @@ import React, { useCallback, memo } from 'react'
 import { StyleSheet, View, Text, Image } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import truncate from 'lodash/truncate'
-import colors from '../styles/colors'
+import colors from 'src/styles/colors'
 import { useDispatch } from 'react-redux'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { addPlayNow } from 'src/playlist'
+import { addPlayNow, addPlayNext } from 'src/playlist'
 
 const style = StyleSheet.create({
   container: {
@@ -71,6 +71,29 @@ export const PodcastHighlightListElement: ListItemElement = ({ item }) => (
   </View>
 )
 
+export const AddToPlayListListElement: ListItemElement = ({ item }) => {
+  const dispatch = useDispatch()
+  const file = item.file
+
+  const onPress = useCallback(() => {
+    if (file) { dispatch(addPlayNext(item.id)) }
+  }, [item, dispatch])
+
+  return file ? (
+    <TouchableOpacity
+      style={style.edgeElement}
+      onPress={onPress}
+    >
+      <View style={style.icon}>
+        <MaterialIcons
+          name="playlist-add"
+          size={50}
+          color={colors.darkText}/>
+      </View>
+    </TouchableOpacity>
+  ) : null
+}
+
 export const PlayListElement: ListItemElement = ({ item }) => {
   const dispatch = useDispatch()
   const file = item.file
@@ -113,4 +136,4 @@ export const createListItem = (
 
 export const PodcastListItem = createListItem(PodcastHighlightListElement, ImageListElement)
 
-export const EpisodeListItem = createListItem(PodcastHighlightListElement, ImageListElement, PlayListElement)
+export const EpisodeListItem = createListItem(PodcastHighlightListElement, ImageListElement, AddToPlayListListElement)

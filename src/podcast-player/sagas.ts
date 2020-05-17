@@ -1,8 +1,9 @@
-import { throttle, select, put } from 'redux-saga/effects'
-import { selectStatus, play, pause, playNewFile } from 'src/player'
+import { throttle, select, put, takeLatest } from 'redux-saga/effects'
+import { selectStatus, play, pause, playNewFile, fileFinishedPlaying } from 'src/player'
 import { PlaybackStatus } from 'expo-av/build/AV'
 import { togglePlay } from '.'
 import { selectCurrentEpisode, Episode } from 'src/episodes'
+import { stepToNext } from 'src/playlist'
 
 function * handelTogglePlay () {
   const currentEpisode: Episode | null = yield select(selectCurrentEpisode)
@@ -18,6 +19,15 @@ function * handelTogglePlay () {
   }
 }
 
+function * handleFileFinishedPlaying () {
+  yield put(stepToNext())
+  const currentEpisode: Episode | null = yield select(selectCurrentEpisode)
+  if (currentEpisode) {
+    yield put(playNewFile(currentEpisode.file))
+  }
+}
+
 export default function * podcastPlayerSaga () {
   yield throttle(100, togglePlay.toString(), handelTogglePlay)
+  yield takeLatest(fileFinishedPlaying.toString(), handleFileFinishedPlaying)
 }
