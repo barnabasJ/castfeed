@@ -1,4 +1,4 @@
-import { throttle, select, put, takeLatest } from 'redux-saga/effects'
+import { debounce, select, put, takeLatest } from 'redux-saga/effects'
 import { selectStatus, play, pause, playNewFile, fileFinishedPlaying, updatePlayerStatus } from 'src/player'
 import { PlaybackStatus } from 'expo-av/build/AV'
 import { togglePlay } from '.'
@@ -39,7 +39,7 @@ function * handleUpdateStatus (action: ReturnType<typeof updatePlayerStatus>) {
 }
 
 export default function * podcastPlayerSaga () {
-  yield throttle(100, togglePlay.toString(), handelTogglePlay)
+  yield takeLatest(togglePlay.toString(), handelTogglePlay)
   yield takeLatest(fileFinishedPlaying.toString(), handleFileFinishedPlaying)
   yield takeLatest(updatePlayerStatus.toString(), handleUpdateStatus)
 }

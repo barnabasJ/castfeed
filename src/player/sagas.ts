@@ -131,8 +131,10 @@ function * handlePlay () {
 function * handlePause () {
   const status: PlaybackStatus | null = yield select(getStatus)
   const sound = soundContainer.getSound()
+  console.log('handlePause', sound, status)
   if (sound) {
     if (status.isLoaded && status.isPlaying) {
+      console.log('call pause')
       yield call(sound.pauseAsync.bind(sound))
       while (true) {
         const nextStatus: PlaybackStatus | null = yield select(getStatus)
@@ -182,8 +184,8 @@ export function * rootSaga () {
   yield takeLatest(playNewFile.toString(), handlePlayerPlayFile)
   yield takeLatest(runUpdatePlayerStatus.toString(), handleRunUpdatePlayerStatus)
   yield takeLatest(updatePlayerStatus.toString(), watchForFileFinished)
-  yield takeLeading(play.toString(), handlePlay)
-  yield takeLeading(pause.toString(), handlePause)
+  yield takeLatest(play.toString(), handlePlay)
+  yield takeLatest(pause.toString(), handlePause)
   yield takeEvery(skipForward.toString(), handleSkipForward)
   yield takeEvery(skipBackward.toString(), handleSkipBackward)
   yield takeLatest(setRate.toString(), handleSetRate)
