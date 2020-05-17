@@ -12,7 +12,8 @@ function * handelTogglePlay () {
   if (currentEpisode) {
     if (!playerStatus) {
       const episodeStatus = yield select((state) => selectById(state, currentEpisode.id))
-      yield put(playNewFile(currentEpisode.file, episodeStatus))
+      const { status } = episodeStatus || {}
+      yield put(playNewFile(currentEpisode.file, status))
     } else if (playerStatus && playerStatus.isLoaded && playerStatus.isPlaying) {
       yield put(pause())
     } else {
@@ -26,7 +27,8 @@ function * handleFileFinishedPlaying () {
   const currentEpisode: Episode | null = yield select(selectCurrentEpisode)
   if (currentEpisode) {
     const episodeStatus = yield select((state) => selectById(state, currentEpisode.id))
-    yield put(playNewFile(currentEpisode.file, episodeStatus))
+    const { status } = episodeStatus || {}
+    yield put(playNewFile(currentEpisode.file, status))
   }
 }
 

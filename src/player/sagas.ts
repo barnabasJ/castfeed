@@ -109,7 +109,7 @@ function * handlePlayerPlayFile (action: ReturnType<typeof playNewFile>) {
     const { sound: newSound, status } = yield call(
       Audio.Sound.createAsync,
       source,
-      merge({}, initialStatus, pick(episodeStatus, 'positionMillis'))
+      merge({}, pick(episodeStatus, 'positionMillis', 'rate'), initialStatus)
     )
     soundContainer.setSound(newSound)
     yield put(runUpdatePlayerStatus(500))

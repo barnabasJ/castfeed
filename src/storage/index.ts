@@ -46,5 +46,5 @@ export function * handleSave () {
 }
 
 export function * storageSaga () {
-  yield throttle(10 * 1000, '*', handleSave)
+  yield throttle(3 * 1000, '*', handleSave)
 }

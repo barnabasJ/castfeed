@@ -1,14 +1,11 @@
-import { createEntityAdapter, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import pick from 'lodash/pick'
-import merge from 'lodash/merge'
+import { createEntityAdapter, createSlice, PayloadAction, DeepPartial } from '@reduxjs/toolkit'
 import { PlaybackStatus } from 'expo-av/build/AV'
 import { Episode } from 'src/episodes'
 import { RootState } from 'src/store'
 
 export interface IEpisodeStatus {
   id: string
-  positionMillis: number
-  durationMillis: number
+  status: DeepPartial<PlaybackStatus>
 }
 
 const statusAdapter = createEntityAdapter({
@@ -19,12 +16,10 @@ const statusAdapter = createEntityAdapter({
 type IStatusState = ReturnType<typeof statusAdapter.getInitialState>
 
 const createEpisodeStatus = (episode: Episode, status: PlaybackStatus) => {
-  const fromPlaybackStatus = pick(status, 'id', 'durationMillis', 'positionMillis')
-  return merge({
+  return {
     id: episode.id,
-    positionMillis: 0,
-    durationMillis: 0
-  }, fromPlaybackStatus)
+    status
+  }
 }
 
 const status = createSlice({
