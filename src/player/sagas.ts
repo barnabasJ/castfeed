@@ -109,23 +109,10 @@ function * handlePlayerPlayFile (action: PayloadAction<PlayableFile>) {
 }
 
 function * handlePlay () {
-  const status: PlaybackStatus | null = yield select(getStatus)
   const sound = soundContainer.getSound()
   if (sound) {
-    if (status.isLoaded && status.isPlaying) {
-      yield call(sound.pauseAsync.bind(sound))
-      while (true) {
-        const nextStatus: PlaybackStatus | null = yield select(getStatus)
-        if (!get(nextStatus, 'isPlaying')) {
-          yield put(stopUpdatePlayerStatus())
-          break
-        }
-        yield delay(500)
-      }
-    } else {
-      yield call(sound.playAsync.bind(sound))
-      yield put(runUpdatePlayerStatus(500))
-    }
+    yield call(sound.playAsync.bind(sound))
+    yield put(runUpdatePlayerStatus(500))
   }
 }
 
