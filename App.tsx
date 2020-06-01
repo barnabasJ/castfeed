@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, ActivityIndicator } from 'react-native'
+import { StyleSheet, ActivityIndicator, View, Text } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Ionicons } from '@expo/vector-icons'
 import { Provider } from 'react-redux'
 import { Action } from '@reduxjs/toolkit'
-import createStore from './src/store'
-import { initPlayer } from './src/player'
+import createStore, { useSelector } from 'src/store'
+import { initPlayer } from 'src/player'
 import PodcastStack from 'src/stacks/podcast-stack'
-import { FilterScreen } from 'src/screens/filter-screen'
+import { FilterStack } from 'src/stacks/filter-stack'
 import { loadState } from 'src/storage'
 import Player from 'src/components/player'
 import { Toaster } from 'src/components/toast'
+import { selectPlaylist } from 'src/playlist'
 
 const TabNavigator = createBottomTabNavigator()
 
@@ -35,19 +36,28 @@ const screenOptions = ({ route }) => {
   }
 }
 
-const Tabs = () => {
+const Main = () => {
+  const { playlist } = useSelector(selectPlaylist)
+  console.log(playlist)
   return (
-    <TabNavigator.Navigator
-      screenOptions={screenOptions}
-      tabBarOptions={{
-        activeTintColor: 'tomato',
-        inactiveTintColor: 'gray'
-      }}
-    >
-      <TabNavigator.Screen name="Podcasts" component={PodcastStack}/>
-      <TabNavigator.Screen name="Filter" component={FilterScreen}/>
-      <TabNavigator.Screen name="Player" component={Player} />
-    </TabNavigator.Navigator>
+    <>
+      <TabNavigator.Navigator
+        screenOptions={screenOptions}
+        tabBarOptions={{
+          activeTintColor: 'tomato',
+          inactiveTintColor: 'gray'
+        }}
+      >
+        <TabNavigator.Screen name="Podcasts" component={PodcastStack}/>
+        <TabNavigator.Screen name="Filter" component={FilterStack}/>
+        <TabNavigator.Screen name="Player" component={Player} />
+      </TabNavigator.Navigator>
+      { playlist.length > 0 &&
+    <View>
+      <Text>Player</Text>
+    </View>
+      }
+    </>
   )
 }
 
@@ -77,7 +87,7 @@ export default function App () {
       {store
         ? <Provider store={store}>
           <NavigationContainer>
-            <Tabs/>
+            <Main/>
           </NavigationContainer>
         </Provider>
         : <ActivityIndicator/>}

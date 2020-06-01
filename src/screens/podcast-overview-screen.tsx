@@ -42,7 +42,7 @@ export const PodcastOverviewScreen: React.FunctionComponent<{}> = () => {
           }
         ]}
         overrideWithAction
-        color='red'
+        color='tomato'
         onPressItem={toPodcastSearch}
       />
     </View>
