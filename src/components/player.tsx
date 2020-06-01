@@ -23,9 +23,9 @@ import { RootState } from 'src/store'
 const Slider = Platform.OS === 'web' ? WebSlider : NativeSlider
 
 export default function Player () {
+  const episode = useSelector(selectCurrentEpisode)
   const Toast = useToast()
   const dispatch = useDispatch()
-  const episode = useSelector(selectCurrentEpisode)
   const playbackStatus = useSelector((state: RootState) => state.player.status)
 
   const {
@@ -60,6 +60,17 @@ export default function Player () {
     }
     dispatch(initPlayer())
   }, [])
+
+  if (!episode) {
+    return (
+      <View>
+        <Text>
+          There are currently no episodes queued for playback!
+        </Text>
+      </View>
+    )
+  }
+
   return (
     <View>
       <StatusBar backgroundColor="black"/>

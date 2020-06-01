@@ -13,6 +13,7 @@ import { loadState } from 'src/storage'
 import Player from 'src/components/player'
 import { Toaster } from 'src/components/toast'
 import { selectPlaylist } from 'src/playlist'
+import PlayerSmall from 'src/components/player-small'
 
 const TabNavigator = createBottomTabNavigator()
 
@@ -37,8 +38,6 @@ const screenOptions = ({ route }) => {
 }
 
 const Main = () => {
-  const { playlist } = useSelector(selectPlaylist)
-  console.log(playlist)
   return (
     <>
       <TabNavigator.Navigator
@@ -52,11 +51,6 @@ const Main = () => {
         <TabNavigator.Screen name="Filter" component={FilterStack}/>
         <TabNavigator.Screen name="Player" component={Player} />
       </TabNavigator.Navigator>
-      { playlist.length > 0 &&
-    <View>
-      <Text>Player</Text>
-    </View>
-      }
     </>
   )
 }
