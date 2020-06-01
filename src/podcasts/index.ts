@@ -68,5 +68,6 @@ export default podcasts.reducer
 export const { subscribeToPodcast, unsubscribeFromPodcast } = podcasts.actions
 
 export const {
-  selectAll
+  selectAll,
+  selectById
 } = podcastAdapter.getSelectors((state: RootState) => state.podcasts)

@@ -25,7 +25,6 @@ const latestEpisodesSelector = createSelector(
 
 export const FilterScreen: React.FunctionComponent<{}> = () => {
   const episodeItems = useSelector(latestEpisodesSelector)
-  console.log(episodeItems)
   const dispatch = useDispatch()
   const onRefresh = useCallback(() => {
     dispatch(updateEpisodesForAllPodcasts())

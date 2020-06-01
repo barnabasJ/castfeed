@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import { Action } from '@reduxjs/toolkit'
 import createStore from './src/store'
 import { initPlayer } from './src/player'
-import { PodcastScreen } from 'src/screens/podcast-screen'
+import PodcastStack from 'src/stacks/podcast-stack'
 import { FilterScreen } from 'src/screens/filter-screen'
 import { loadState } from 'src/storage'
 import Player from 'src/components/player'
@@ -44,7 +44,7 @@ const Tabs = () => {
         inactiveTintColor: 'gray'
       }}
     >
-      <TabNavigator.Screen name="Podcasts" component={PodcastScreen}/>
+      <TabNavigator.Screen name="Podcasts" component={PodcastStack}/>
       <TabNavigator.Screen name="Filter" component={FilterScreen}/>
       <TabNavigator.Screen name="Player" component={Player} />
     </TabNavigator.Navigator>

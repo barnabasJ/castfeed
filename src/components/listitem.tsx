@@ -6,6 +6,9 @@ import colors from 'src/styles/colors'
 import { useDispatch } from 'react-redux'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { addPlayNow, addPlayNext } from 'src/playlist'
+import { subscribeToPodcast, Podcast } from 'src/podcasts'
+import { selectById } from 'src/search'
+import { useSelector } from 'src/store'
 
 const style = StyleSheet.create({
   container: {
@@ -15,9 +18,6 @@ const style = StyleSheet.create({
     flexWrap: 'nowrap',
     margin: 10
   },
-  edgeElement: {
-    width: '20%'
-  },
   centerElement: {
     width: '60%',
     display: 'flex',
@@ -26,15 +26,10 @@ const style = StyleSheet.create({
     marginHorizontal: 10
   },
   icon: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%'
   },
   image: {
-    height: '100%',
-    width: 'auto'
+    height: 50,
+    width: 50
   }
 })
 
@@ -44,9 +39,18 @@ export interface IListItem {
   thumbUrl: string
   date?: string
   file?: {
-    url: string,
+    uri: string,
     type: string,
     length: number
+  }
+}
+
+export function podcastToListItem (podcast: Podcast): IListItem {
+  return {
+    id: podcast.trackId.toString(),
+    title: podcast.trackName,
+    thumbUrl: podcast.artworkUrl100,
+    date: podcast.releaseDate
   }
 }
 
@@ -59,9 +63,7 @@ type ListItemElement = React.FunctionComponent<{
 }>
 
 export const ImageListElement: ListItemElement = ({ item }) => (
-  <View style={style.edgeElement}>
-    <Image style={style.image} source={{ uri: item.thumbUrl }} />
-  </View>
+  <Image style={style.image} source={{ uri: item.thumbUrl }} />
 )
 
 export const PodcastHighlightListElement: ListItemElement = ({ item }) => (
@@ -79,18 +81,38 @@ export const AddToPlayListListElement: ListItemElement = ({ item }) => {
     if (file) { dispatch(addPlayNext(item.id)) }
   }, [item, dispatch])
 
+  const onPlay = useCallback(() => {
+    if (file) { dispatch(addPlayNow(item.id)) }
+  }, [item, dispatch])
+
   return file ? (
-    <TouchableOpacity
-      style={style.edgeElement}
-      onPress={onPress}
+    <View
+      style={{
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-evenly'
+      }}
     >
-      <View style={style.icon}>
+      <TouchableOpacity
+        onPress={onPress}
+      >
         <MaterialIcons
           name="playlist-add"
-          size={50}
+          size={30}
           color={colors.darkText}/>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={onPlay}
+      >
+        <View style={style.icon}>
+          <MaterialIcons
+            name="play-arrow"
+            size={20}
+            color={colors.darkText}/>
+        </View>
+      </TouchableOpacity>
+    </View>
   ) : null
 }
 
@@ -104,17 +126,38 @@ export const PlayListElement: ListItemElement = ({ item }) => {
 
   return file ? (
     <TouchableOpacity
-      style={style.edgeElement}
       onPress={onPress}
     >
       <View style={style.icon}>
         <MaterialIcons
           name="play-arrow"
-          size={50}
+          size={20}
           color={colors.darkText}/>
       </View>
     </TouchableOpacity>
   ) : null
+}
+
+export const SubscribeListListElement: ListItemElement = ({ item }) => {
+  const podcast: Podcast = useSelector(state => selectById(state, item.id))
+  const dispatch = useDispatch()
+
+  const onPress = useCallback(() => {
+    dispatch(subscribeToPodcast(podcast))
+  }, [podcast, dispatch])
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+    >
+      <View style={style.icon}>
+        <MaterialIcons
+          name="add-box"
+          size={50}
+          color={colors.darkText}/>
+      </View>
+    </TouchableOpacity>
+  )
 }
 
 export const createListItem = (
@@ -137,3 +180,5 @@ export const createListItem = (
 export const PodcastListItem = createListItem(PodcastHighlightListElement, ImageListElement)
 
 export const EpisodeListItem = createListItem(PodcastHighlightListElement, ImageListElement, AddToPlayListListElement)
+
+export const SearchResultItem = createListItem(PodcastHighlightListElement, ImageListElement, SubscribeListListElement)
