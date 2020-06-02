@@ -1,7 +1,8 @@
 import { createEntityAdapter, createSlice, PayloadAction, DeepPartial } from '@reduxjs/toolkit'
 import { PlaybackStatus } from 'expo-av/build/AV'
-import { Episode } from 'src/episodes'
+import { Episode, remove } from 'src/episodes'
 import { RootState } from 'src/store'
+import isString from 'lodash/isString'
 
 export interface IEpisodeStatus {
   id: string
@@ -35,6 +36,15 @@ const status = createSlice({
         payload: { episode, status }
       })
     }
+  },
+  extraReducers: builder => {
+    builder.addCase(remove, (state, action: PayloadAction<string | string[]>) => {
+      if (isString(action.payload)) {
+        statusAdapter.removeOne(state, action.payload)
+      } else {
+        statusAdapter.removeMany(state, action.payload)
+      }
+    })
   }
 })
 

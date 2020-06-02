@@ -6,8 +6,10 @@ import colors from 'src/styles/colors'
 import { useDispatch } from 'react-redux'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { addPlayNow, addPlayNext } from 'src/playlist'
-import { subscribeToPodcast, Podcast } from 'src/podcasts'
-import { selectById } from 'src/search'
+import { subscribeToPodcast, Podcast, unsubscribeFromPodcast, selectById as selectPodcastById } from 'src/podcasts'
+import { selectById as selectSearchResultById } from 'src/search'
+import { IconContainer, Icon, IconSize } from 'src/components/icon'
+
 import { useSelector } from 'src/store'
 
 const style = StyleSheet.create({
@@ -86,33 +88,25 @@ export const AddToPlayListListElement: ListItemElement = ({ item }) => {
   }, [item, dispatch])
 
   return file ? (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-evenly'
-      }}
+    <IconContainer
     >
       <TouchableOpacity
         onPress={onPress}
       >
-        <MaterialIcons
+        <Icon
           name="playlist-add"
-          size={30}
+          size={IconSize.medium}
           color={colors.darkText}/>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={onPlay}
       >
-        <View style={style.icon}>
-          <MaterialIcons
-            name="play-arrow"
-            size={20}
-            color={colors.darkText}/>
-        </View>
+        <Icon
+          name="play-arrow"
+          size={IconSize.medium}
+          color={colors.darkText}/>
       </TouchableOpacity>
-    </View>
+    </IconContainer>
   ) : null
 }
 
@@ -125,21 +119,21 @@ export const PlayListElement: ListItemElement = ({ item }) => {
   }, [item, dispatch])
 
   return file ? (
-    <TouchableOpacity
-      onPress={onPress}
-    >
-      <View style={style.icon}>
+    <IconContainer>
+      <TouchableOpacity
+        onPress={onPress}
+      >
         <MaterialIcons
           name="play-arrow"
           size={20}
           color={colors.darkText}/>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </IconContainer>
   ) : null
 }
 
 export const SubscribeListListElement: ListItemElement = ({ item }) => {
-  const podcast: Podcast = useSelector(state => selectById(state, item.id))
+  const podcast: Podcast = useSelector(state => selectSearchResultById(state, item.id))
   const dispatch = useDispatch()
 
   const onPress = useCallback(() => {
@@ -147,16 +141,35 @@ export const SubscribeListListElement: ListItemElement = ({ item }) => {
   }, [podcast, dispatch])
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-    >
-      <View style={style.icon}>
-        <MaterialIcons
+    <IconContainer>
+      <TouchableOpacity
+        onPress={onPress}
+      >
+        <Icon
           name="add-box"
-          size={50}
+          size={IconSize.medium}
           color={colors.darkText}/>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </IconContainer>
+  )
+}
+
+export const UnsubscribeListListElement: ListItemElement = ({ item }) => {
+  const podcast: Podcast = useSelector(state => selectPodcastById(state, item.id))
+  const dispatch = useDispatch()
+
+  const onPress = useCallback(() => {
+    dispatch(unsubscribeFromPodcast(podcast))
+  }, [podcast, dispatch])
+
+  return (
+    <IconContainer>
+      <TouchableOpacity
+        onPress={onPress}
+      >
+        <Icon name="indeterminate-check-box" size={IconSize.medium} color={colors.darkText} />
+      </TouchableOpacity>
+    </IconContainer>
   )
 }
 
@@ -177,7 +190,7 @@ export const createListItem = (
   return memo(ListItem)
 }
 
-export const PodcastListItem = createListItem(PodcastHighlightListElement, ImageListElement)
+export const PodcastListItem = createListItem(PodcastHighlightListElement, ImageListElement, UnsubscribeListListElement)
 
 export const EpisodeListItem = createListItem(PodcastHighlightListElement, ImageListElement, AddToPlayListListElement)
 
