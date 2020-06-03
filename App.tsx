@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, ActivityIndicator } from 'react-native'
+import { StyleSheet, ActivityIndicator, StatusBar } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Ionicons } from '@expo/vector-icons'
@@ -76,6 +76,7 @@ export default function App () {
     <Toaster>
       {store
         ? <Provider store={store}>
+          <StatusBar/>
           <NavigationContainer>
             <Main/>
           </NavigationContainer>

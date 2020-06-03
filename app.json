@@ -26,6 +26,10 @@
     "ios": {
       "supportsTablet": true
     },
+    "android": {
+      "package": "net.jovacorp.castfeed",
+      "versionCode": 1
+    },
     "description": "",
     "githubUrl": "https://github.com/barnabasJ/castfeed"
   }

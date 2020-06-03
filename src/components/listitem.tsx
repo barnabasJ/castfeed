@@ -5,7 +5,7 @@ import truncate from 'lodash/truncate'
 import colors from 'src/styles/colors'
 import { useDispatch } from 'react-redux'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { addPlayNow, addPlayNext } from 'src/playlist'
+import { addPlayNow, addPlayNext, removeFromPlaylist } from 'src/playlist'
 import { subscribeToPodcast, Podcast, unsubscribeFromPodcast, selectById as selectPodcastById } from 'src/podcasts'
 import { selectById as selectSearchResultById } from 'src/search'
 import { IconContainer, Icon, IconSize } from 'src/components/icon'
@@ -83,7 +83,7 @@ export const PodcastHighlightListElement: ListItemElement = ({ item }) => (
   </View>
 )
 
-export const AddToPlayListListElement: ListItemElement = ({ item }) => {
+export const EpisodeOverviewControls: ListItemElement = ({ item }) => {
   const dispatch = useDispatch()
   const file = item.file
 
@@ -111,6 +111,57 @@ export const AddToPlayListListElement: ListItemElement = ({ item }) => {
       >
         <Icon
           name="play-arrow"
+          size={IconSize.medium}
+          color={colors.darkText}/>
+      </TouchableOpacity>
+    </IconContainer>
+  ) : null
+}
+
+export const PlaylistControls: ListItemElement = ({ item, index }) => {
+  const dispatch = useDispatch()
+  const file = item.file
+
+  const onPress = useCallback(() => {
+    if (file) { dispatch(addPlayNext(item.id)) }
+  }, [item, dispatch])
+
+  const onPlay = useCallback(() => {
+    if (file) { dispatch(addPlayNow(item.id)) }
+  }, [item, dispatch])
+
+  const onRemove = useCallback(() => {
+    if (file) { dispatch(removeFromPlaylist(item.id)) }
+  }, [item, dispatch])
+
+  return file ? (
+    <IconContainer
+    >
+      { index > 0 &&
+        <>
+          <TouchableOpacity
+            onPress={onPress}
+          >
+            <Icon
+              name="expand-less"
+              size={IconSize.medium}
+              color={colors.darkText}/>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={onPlay}
+          >
+            <Icon
+              name="play-arrow"
+              size={IconSize.medium}
+              color={colors.darkText}/>
+          </TouchableOpacity>
+        </>
+      }
+      <TouchableOpacity
+        onPress={onRemove}
+      >
+        <Icon
+          name="clear"
           size={IconSize.medium}
           color={colors.darkText}/>
       </TouchableOpacity>
@@ -185,12 +236,12 @@ export const createListItem = (
   CenterElement: ListItemElement,
   LeftElement?: ListItemElement,
   RightElement?: ListItemElement): ListItem => {
-  const ListItem: ListItem = ({ item }) => {
+  const ListItem: ListItem = (props) => {
     return (
       <View style={style.container}>
-        {LeftElement && <LeftElement item={item}/>}
-        <CenterElement item={item}/>
-        {RightElement && <RightElement item={item}/>}
+        {LeftElement && <LeftElement {...props}/>}
+        <CenterElement {...props}/>
+        {RightElement && <RightElement {...props}/>}
       </View>
     )
   }
@@ -200,8 +251,8 @@ export const createListItem = (
 
 export const PodcastListItem = createListItem(PodcastHighlightListElement, ImageListElement, UnsubscribeListListElement)
 
-export const EpisodeListItem = createListItem(PodcastHighlightListElement, ImageListElement, AddToPlayListListElement)
+export const EpisodeListItem = createListItem(PodcastHighlightListElement, ImageListElement, EpisodeOverviewControls)
 
-export const PlaylistListItem = createListItem(PodcastHighlightListElement, ImageListElement, AddToPlayListListElement)
+export const PlaylistListItem = createListItem(PodcastHighlightListElement, ImageListElement, PlaylistControls)
 
 export const SearchResultItem = createListItem(PodcastHighlightListElement, ImageListElement, SubscribeListListElement)

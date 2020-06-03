@@ -29,7 +29,7 @@ export const PlaylistScreen: React.FunctionComponent<{}> = () => {
       <FlatList
         data={playlist}
         keyExtractor={({ id }: IListItem) => id}
-        renderItem={({ item }) => <PlaylistListItem item={item}/>}
+        renderItem={(props) => <PlaylistListItem {...props}/>}
       />
     </View>
   )
