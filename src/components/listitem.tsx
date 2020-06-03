@@ -9,6 +9,7 @@ import { addPlayNow, addPlayNext } from 'src/playlist'
 import { subscribeToPodcast, Podcast, unsubscribeFromPodcast, selectById as selectPodcastById } from 'src/podcasts'
 import { selectById as selectSearchResultById } from 'src/search'
 import { IconContainer, Icon, IconSize } from 'src/components/icon'
+import { Episode } from 'src/episodes'
 
 import { useSelector } from 'src/store'
 
@@ -26,8 +27,6 @@ const style = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     marginHorizontal: 10
-  },
-  icon: {
   },
   image: {
     height: 50,
@@ -53,6 +52,15 @@ export function podcastToListItem (podcast: Podcast): IListItem {
     title: podcast.trackName,
     thumbUrl: podcast.artworkUrl100,
     date: podcast.releaseDate
+  }
+}
+export function episodeToListItem ({ id, title, image, file, pubDate }: Episode): IListItem {
+  return {
+    id,
+    title,
+    date: pubDate,
+    thumbUrl: image,
+    file
   }
 }
 
@@ -193,5 +201,7 @@ export const createListItem = (
 export const PodcastListItem = createListItem(PodcastHighlightListElement, ImageListElement, UnsubscribeListListElement)
 
 export const EpisodeListItem = createListItem(PodcastHighlightListElement, ImageListElement, AddToPlayListListElement)
+
+export const PlaylistListItem = createListItem(PodcastHighlightListElement, ImageListElement, AddToPlayListListElement)
 
 export const SearchResultItem = createListItem(PodcastHighlightListElement, ImageListElement, SubscribeListListElement)

@@ -9,7 +9,7 @@ export function PodcastStack () {
   return (
     <Stack.Navigator>
       <Stack.Screen name="PodcastOverview" component={PodcastOverviewScreen}/>
-      <Stack.Screen name="PodcastSearch" component={PodcastSearchScreen}/>
+      <Stack.Screen name="PodcastSearch" component={PodcastSearchScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   )
 }

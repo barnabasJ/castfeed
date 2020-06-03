@@ -83,6 +83,8 @@ export const {
   removeFromPlaylist
 } = playlist.actions
 
-export const selectPlaylist = (state: RootState): PlaylistState => state.playlist
+export const selectPlaylistState = (state: RootState): PlaylistState => state.playlist
 
-export const selectCurrent = (state: RootState) => get(selectPlaylist(state), 'playlist[0]') || null
+export const selectPlaylist = (state: RootState) => selectPlaylistState(state).playlist
+
+export const selectCurrent = (state: RootState) => get(selectPlaylistState(state), 'playlist[0]') || null

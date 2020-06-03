@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, ActivityIndicator, View, Text } from 'react-native'
+import { StyleSheet, ActivityIndicator } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Ionicons } from '@expo/vector-icons'
 import { Provider } from 'react-redux'
 import { Action } from '@reduxjs/toolkit'
-import createStore, { useSelector } from 'src/store'
+import createStore from 'src/store'
 import { initPlayer } from 'src/player'
 import PodcastStack from 'src/stacks/podcast-stack'
 import { FilterStack } from 'src/stacks/filter-stack'
 import { loadState } from 'src/storage'
-import Player from 'src/components/player'
+import PlayerStack from 'src/stacks/player-stack'
 import { Toaster } from 'src/components/toast'
-import { selectPlaylist } from 'src/playlist'
-import PlayerSmall from 'src/components/player-small'
 
 const TabNavigator = createBottomTabNavigator()
 
@@ -39,19 +37,17 @@ const screenOptions = ({ route }) => {
 
 const Main = () => {
   return (
-    <>
-      <TabNavigator.Navigator
-        screenOptions={screenOptions}
-        tabBarOptions={{
-          activeTintColor: 'tomato',
-          inactiveTintColor: 'gray'
-        }}
-      >
-        <TabNavigator.Screen name="Podcasts" component={PodcastStack}/>
-        <TabNavigator.Screen name="Filter" component={FilterStack}/>
-        <TabNavigator.Screen name="Player" component={Player} />
-      </TabNavigator.Navigator>
-    </>
+    <TabNavigator.Navigator
+      screenOptions={screenOptions}
+      tabBarOptions={{
+        activeTintColor: 'tomato',
+        inactiveTintColor: 'gray'
+      }}
+    >
+      <TabNavigator.Screen name="Podcasts" component={PodcastStack}/>
+      <TabNavigator.Screen name="Filter" component={FilterStack}/>
+      <TabNavigator.Screen name="Player" component={PlayerStack} />
+    </TabNavigator.Navigator>
   )
 }
 
