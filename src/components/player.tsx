@@ -19,6 +19,7 @@ import { selectCurrentEpisode } from 'src/episodes'
 import { useToast } from 'src/components/toast'
 import colors from 'src/styles/colors'
 import { RootState } from 'src/store'
+import { Icon, IconSize } from 'src/components/icon'
 
 const Slider = Platform.OS === 'web' ? WebSlider : NativeSlider
 
@@ -101,7 +102,7 @@ export default function Player () {
         </View>
         <View style={styles.textRow}>
           <Text>
-            {positionMillis && durationMillis
+            {positionMillis && durationMillis && isLoaded
               ? millisToTime(positionMillis) + '/' + millisToTime(durationMillis)
               : 'Buffering...' }
           </Text>
@@ -141,19 +142,24 @@ export default function Player () {
           </TouchableOpacity>
         </View>
         <View style={styles.rateSlider}>
-          <Slider
-            minimumTrackTintColor={colors.primaryColor}
-            maximumTrackTintColor={colors.secondaryColor}
-            thumbTintColor={colors.darkText}
-            maximumValue={2}
-            minimumValue={0.25}
-            value={rate || 1}
-            step={0.25}
-            onValueChange={rate => dispatch(
-              setRate(rate)
-            )}/>
-          <Text style={{ margin: 10 }}>Playback speed: {rate}</Text>
+          <Icon name='av-timer' size={IconSize.medium} color={colors.darkText}/>
+          <View style={{
+            width: 100
+          }}>
+            <Slider
+              minimumTrackTintColor={colors.primaryColor}
+              maximumTrackTintColor={colors.secondaryColor}
+              thumbTintColor={colors.darkText}
+              maximumValue={2}
+              minimumValue={0.25}
+              value={rate || 1}
+              step={0.25}
+              onValueChange={rate => dispatch(
+                setRate(rate)
+              )}/>
+          </View>
         </View>
+        <Text style={{ margin: 10 }}>Playback speed: {rate}</Text>
       </SafeAreaView>
     </View>
   )
@@ -187,8 +193,11 @@ const styles = StyleSheet.create({
     height: 20
   },
   rateSlider: {
-    width: '30%',
-    height: 20
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    width: '50%'
   },
   textRow: {
     height: 20
