@@ -108,36 +108,36 @@ export default function Player () {
           </Text>
         </View>
         <View style={styles.controls}>
-          <TouchableOpacity style={styles.horizontalSpace}>
-            <MaterialIcons name="replay-30"
-              size={50}
+          <TouchableOpacity
+            style={styles.horizontalSpace}
+            onPress={() => dispatch(
+              skipBackward(30 * 1000)
+            )}
+          >
+            <Icon name="replay-30"
+              size={IconSize.large}
               color={colors.darkText}
-              onPress={() => dispatch(
-                skipBackward(30 * 1000)
-              )}
             />
           </TouchableOpacity>
           <TouchableOpacity style={styles.horizontalSpace}
             onPress={() => dispatch(
               togglePlay()
             )}>
-            {isPlaying
-              ? <MaterialIcons
-                name="pause"
-                size={50}
-                color={colors.darkText}/>
-              : <MaterialIcons
-                name="play-arrow"
-                size={50}
-                color={colors.darkText}/>}
+            <Icon
+              name={ isPlaying ? 'pause' : 'play-arrow'}
+              size={IconSize.large}
+              color={colors.darkText}/>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.horizontalSpace}>
-            <MaterialIcons name="forward-30"
-              size={50}
+          <TouchableOpacity
+            style={styles.horizontalSpace}
+            onPress={() => dispatch(
+              skipForward(30 * 1000)
+            )}
+
+          >
+            <Icon name="forward-30"
+              size={IconSize.large}
               color={colors.darkText}
-              onPress={() => dispatch(
-                skipForward(30 * 1000)
-              )}
             />
           </TouchableOpacity>
         </View>

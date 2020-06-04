@@ -4,6 +4,10 @@ import isEmpty from 'lodash/isEmpty'
 import concat from 'lodash/concat'
 import filter from 'lodash/filter'
 import has from 'lodash/has'
+import forEach from 'lodash/fp/forEach'
+import isString from 'lodash/isString'
+import curry from 'lodash/curry'
+import indexOf from 'lodash/indexOf'
 import { withPayloadType } from 'src/utils'
 import { RootState } from 'src/store'
 
@@ -26,6 +30,10 @@ function prepareForInsert (id, state) {
   }
   state.episodes[id] = true
 }
+
+const del = curry((obj, key) => {
+  delete obj[key]
+})
 
 const playlist = createSlice({
   name: 'playlist',
@@ -61,14 +69,18 @@ const playlist = createSlice({
       state.playlist = next
     },
     removeFromPlaylist: {
-      reducer: (state, action: PayloadAction<string>) => {
-        const id = action.payload
-        if (has(state.episodes, id)) {
+      reducer: (state, action: PayloadAction<string | string[]>) => {
+        if (isString(action.payload)) {
+          const id = action.payload
           state.playlist = filter(state.playlist, pId => pId !== id)
+          del(state.episodes, id)
+        } else {
+          const ids = action.payload
+          state.playlist = filter(state.playlist, pId => indexOf(ids, pId) < 0)
+          forEach(del(state.episodes), ids)
         }
-        delete state.episodes[id]
       },
-      prepare: withPayloadType<string>()
+      prepare: withPayloadType<string | string[]>()
     }
   }
 })

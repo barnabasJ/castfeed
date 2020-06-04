@@ -26,7 +26,7 @@ export enum IconSize {
 const sizeMap = {
   [IconSize.small]: 20,
   [IconSize.medium]: 25,
-  [IconSize.large]: 30
+  [IconSize.large]: 45
 }
 
 export const Icon: React.FunctionComponent<{name: string, size: IconSize, color: string}> = ({ name, size, color }) => {

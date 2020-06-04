@@ -39,7 +39,15 @@ const createStore = (preloadedState: DeepPartial<RootState>) => {
   })
 
   sagaMiddleware.run(function * rootSaga () {
-    yield all([searchSaga(), playerSaga(), playlistSaga(), rssSaga(), episodesSaga(), storageSaga(), podcastPlayerSaga()])
+    yield all([
+      searchSaga(),
+      playerSaga(),
+      playlistSaga(),
+      rssSaga(),
+      episodesSaga(),
+      storageSaga(),
+      podcastPlayerSaga()
+    ])
   })
   return store
 }

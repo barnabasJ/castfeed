@@ -1,12 +1,12 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import { View } from 'react-native'
 import map from 'lodash/fp/map'
 import flow from 'lodash/flow'
+import compact from 'lodash/fp/compact'
 import { selectPlaylist } from 'src/playlist'
 import { selectEntities } from 'src/episodes'
 import { FlatList } from 'react-native-gesture-handler'
 import { IListItem, episodeToListItem, PlaylistListItem } from 'src/components/listitem'
-import { useDispatch } from 'react-redux'
 import { createSelector } from 'reselect'
 import { useSelector } from 'src/store'
 
@@ -16,6 +16,7 @@ const playlistSelector = createSelector(
   (playlist, episodes) =>
     flow(
       map((id: string) => episodes[id]),
+      compact,
       map(episodeToListItem)
     )(playlist)
 

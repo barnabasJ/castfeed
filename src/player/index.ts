@@ -82,6 +82,10 @@ export const selectPlayer = (state: RootState): PlayerState => state.player
 
 export const selectStatus = createSelector(selectPlayer, (playerState) => playerState.status)
 
+export const selectIsPlaying = createSelector(selectStatus, (status) =>
+  (status && status.isLoaded && status.isPlaying) || false
+)
+
 export const initPlayer = createAction('player/init')
 export const playNewFile = createAction(
   'player/playNewFile',
