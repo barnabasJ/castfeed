@@ -12,7 +12,6 @@ import {
 } from 'react-native'
 import WebSlider from 'react-native-slider-web'
 import { useSelector, useDispatch } from 'react-redux'
-import { MaterialIcons } from '@expo/vector-icons'
 import { initPlayer, setRate, skipBackward, skipForward } from 'src/player'
 import { togglePlay } from 'src/podcast-player'
 import { selectCurrentEpisode } from 'src/episodes'
@@ -57,7 +56,7 @@ export default function Player () {
 
   useEffect(() => {
     if (!isLoaded) {
-      Toast.show('Loading...', 10)
+      Toast.show('Loading...', 3 * 1000)
     }
     dispatch(initPlayer())
   }, [])

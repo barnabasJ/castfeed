@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useCallback, useContext } from 'react'
-import { Modal, Text } from 'react-native'
+import { Modal, Text, View } from 'react-native'
 import concat from 'lodash/concat'
 import slice from 'lodash/slice'
 import isEmpty from 'lodash/isEmpty'
@@ -37,13 +37,35 @@ export const Toaster: React.FunctionComponent = ({ children }) => {
     }
   }, [currentToast, setCurrentToast])
 
+  const onRequestClose = useCallback(() => {
+    setIsShowing(false)
+    setCurrentToast(null)
+  }, [setIsShowing, setCurrentToast])
+
   return (
     <ToastContext.Provider value={{ show }}>
       {children}
       <Modal
+        transparent
         animationType="slide"
-        visible={isShowing}>
-        <Text>{currentToast && currentToast.message}</Text>
+        visible={isShowing}
+        onRequestClose={onRequestClose}
+      >
+        <View style={{
+          width: '100%',
+          height: '100%',
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+          <View style={{
+            backgroundColor: 'rgba(190, 190, 190, 0.4)',
+            borderRadius: 20,
+            padding: 40
+          }}>
+            <Text>{currentToast && currentToast.message}</Text>
+          </View>
+        </View>
       </Modal>
     </ToastContext.Provider>
   )
